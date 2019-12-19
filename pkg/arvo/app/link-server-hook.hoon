@@ -39,8 +39,8 @@
   ::
   ++  on-init
     ^-  (quip card _this)
-    :_  this
-    [start-serving:do]~
+    :-  [start-serving:do launch-tile:do ~]
+    this
   ::
   ++  on-save  !>(state)
   ++  on-load
@@ -92,6 +92,16 @@
 ++  start-serving
   ^-  card
   [%pass / %arvo %e %connect [~ /'~link'] dap.bowl]
+::
+++  launch-tile
+  ^-  card
+  (launch-poke [%link-server-hook /primary '/~link/js/tile.js'])
+::
+::
+++  launch-poke
+  |=  act=[@tas path @t]
+  ^-  card
+  [%pass / %agent [our.bowl %launch] %poke %launch-action !>(act)]
 ::
 ++  do-action
   |=  =action
@@ -161,6 +171,10 @@
 ::
 ++  handle-get
   |=  [request-headers=header-list:http =request-line]
+  ::  if we request base path, return index.html
+  ::
+  ?:  ?=([[~ [%'~link' ~]] *] request-line)
+    $(request-line request-line(ext `%html, site [%'~link' /index]))
   %+  include-cors-headers
     request-headers
   ^-  simple-payload:http
