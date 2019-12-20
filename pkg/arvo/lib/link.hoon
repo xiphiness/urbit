@@ -25,6 +25,13 @@
 ++  en-json
   =,  enjs:format
   |%
+  ++  submission
+    |=  sub=^submission
+    ^-  json
+    =+  p=(page +.sub)
+    ?>  ?=([%o *] p)
+    o+(~(put by p.p) 'ship' (ship ship.sub))
+  ::
   ++  page
     |=  =^page
     ^-  json
@@ -41,8 +48,8 @@
   ++  action
     |=  =json
     ^-  ^action
-    ?>  ?=([%o [%add *] ~ ~] json)
-    :-  %add  ::TODO  +of doesn't please type system?
+    ?>  ?=([%o [%save *] ~ ~] json)
+    :-  %save  ::TODO  +of doesn't please type system?
     %.  q.n.p.json
     (ot 'path'^pa 'title'^so 'url'^so ~)
   --

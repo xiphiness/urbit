@@ -39,8 +39,8 @@
   ::
   ++  on-init
     ^-  (quip card _this)
-    :_  this
-    [start-serving:do]~
+    :-  [start-serving:do launch-tile:do ~]
+    this
   ::
   ++  on-save  !>(state)
   ++  on-load
@@ -93,6 +93,16 @@
   ^-  card
   [%pass / %arvo %e %connect [~ /'~link'] dap.bowl]
 ::
+++  launch-tile
+  ^-  card
+  (launch-poke [%link-server-hook /primary '/~link/js/tile.js'])
+::
+::
+++  launch-poke
+  |=  act=[@tas path @t]
+  ^-  card
+  [%pass / %agent [our.bowl %launch] %poke %launch-action !>(act)]
+::
 ++  do-action
   |=  =action
   ^-  card
@@ -101,7 +111,7 @@
 ++  do-add
   |=  [=path title=@t =url]
   ^-  card
-  (do-action %add path title url)
+  (do-action %save path title url)
 ::
 ++  handle-http-request
   |=  [eyre-id=@ta =inbound-request:eyre]
@@ -112,21 +122,20 @@
   ?.  ?&  authenticated.inbound-request
           =(src.bowl our.bowl)
       ==
-    ::TODO  `*octs -> ~ everywhere once no-data bug is fixed
-    (give-simple-payload:app eyre-id [[403 ~] `*octs])
+    (give-simple-payload:app eyre-id [[403 ~] ~])
   ::  request-line: parsed url + params
   ::
   =/  =request-line
     %-  parse-request-line
     url.request.inbound-request
   =*  req-head  header-list.request.inbound-request
-  =-  ::TODO  =;  [cards=(list card) =simple-payload:http]
+  =-  ::TODO  =;
     %+  weld  cards
     (give-simple-payload:app eyre-id simple-payload)
   ^-  [cards=(list card) =simple-payload:http]
   ?+  method.request.inbound-request  [~ not-found:gen]
       %'OPTIONS'
-    [~ (include-cors-headers req-head [[200 ~] `*octs])]
+    [~ (include-cors-headers req-head [[200 ~] ~])]
   ::
       %'GET'
     [~ (handle-get req-head request-line)]
@@ -138,14 +147,14 @@
 ++  handle-post
   |=  [request-headers=header-list:http =request-line body=(unit octs)]
   ^-  [(list card) simple-payload:http]
-  =-  ::TODO  =;  [success=? cards=(list card)]
+  =-  ::TODO  =;
     :-  cards
     %+  include-cors-headers
       request-headers
     ::TODO  it would be more correct to wait for the %poke-ack instead of
     ::      sending this response right away... but link-store pokes can't
     ::      actually fail right now, so it's fine.
-    [[?:(success 200 400) ~] `*octs]
+    [[?:(success 200 400) ~] ~]
   ^-  [success=? cards=(list card)]
   ?~  body  [| ~]
   ?+  request-line  [| ~]
@@ -162,6 +171,10 @@
 ::
 ++  handle-get
   |=  [request-headers=header-list:http =request-line]
+  ::  if we request base path, return index.html
+  ::
+  ?:  ?=([[~ [%'~link' ~]] *] request-line)
+    $(request-line request-line(ext `%html, site [%'~link' /index]))
   %+  include-cors-headers
     request-headers
   ^-  simple-payload:http
@@ -174,18 +187,37 @@
   =/  p=(unit @ud)
     %+  biff  (~(get by args) 'p')
     (curr rush dim:ag)
-  ?+  request-line  not-found:gen
-  ::TODO  expose submissions, other data
+  ?+  request-line
+  ::  for the default case, try to load file from clay
+  ::
+      ?~  ext.request-line  not-found:gen
+      =/  file=(unit octs)
+        ?.  ?=([%'~link' *] site.request-line)  ~
+        (get-file-at /app/link [t.site u.ext]:request-line)
+      ?~  file  not-found:gen
+      ?+  u.ext.request-line  not-found:gen
+        %html  (html-response:gen u.file)
+        %js    (js-response:gen u.file)
+        %css   (css-response:gen u.file)
+      ==
+  ::  submissions by recency as json
+  ::
+      [[[~ %json] [%'~link' %submissions ^]] *]
+    %-  json-response:gen
+    %-  json-to-octs  ::TODO  include in +json-response:gen
+    :-  %a
+    %+  turn
+      (get-submissions t.t.site.request-line p)
+    submission:en-json
   ::  local links by recency as json
   ::
       [[[~ %json] [%'~link' %local-pages ^]] *]
     %-  json-response:gen
     %-  json-to-octs  ::TODO  include in +json-response:gen
-    ^-  json
     :-  %a
     %+  turn
-      `pages`(get-pages t.t.site.request-line p)
-    `$-(page json)`page:en-json
+      (get-local-pages t.t.site.request-line p)
+    page:en-json
   ==
 ::
 ++  include-cors-headers
@@ -211,14 +243,30 @@
   ==
 ::
 ++  page-size  25
-++  get-pages
+++  get-paginated
+  |*  [l=(list) p=(unit @ud)]
+  ?~  p  l
+  %+  scag  page-size
+  %+  slag  (mul u.p page-size)
+  l
+::
+++  get-submissions
+  |=  [=path p=(unit @ud)]
+  ^-  submissions
+  =-  (get-paginated - p)
+  .^  submissions
+    %gx
+    (scot %p our.bowl)
+    %link-store
+    (scot %da now.bowl)
+    %submissions
+    (snoc path %noun)
+  ==
+::
+++  get-local-pages
   |=  [=path p=(unit @ud)]
   ^-  pages
-  =;  =pages
-    ?~  p  pages
-    %+  scag  page-size
-    %+  slag  (mul u.p page-size)
-    pages
+  =-  (get-paginated - p)
   .^  pages
     %gx
     (scot %p our.bowl)
@@ -227,4 +275,23 @@
     %local-pages
     (snoc path %noun)
   ==
+::
+++  get-file-at
+  |=  [base=path file=path ext=@ta]
+  ^-  (unit octs)
+  ::  only expose html, css and js files for now
+  ::
+  ?.  ?=(?(%html %css %js) ext)
+    ~
+  =/  =path
+    :*  (scot %p our.bowl)
+        q.byk.bowl
+        (scot %da now.bowl)
+        (snoc (weld base file) ext)
+    ==
+  ?.  .^(? %cu path)
+    ~
+  %-  some
+  %-  as-octs:mimes:html
+  .^(@ %cx path)
 --
