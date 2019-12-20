@@ -53,6 +53,8 @@
     ^-  (quip card _this)
     ?:  ?=([%http-response *] path)
       [~ this]
+    ?:  =(/primary path)
+      [~ this]
     (on-watch:def path)
   ::
   ++  on-poke
