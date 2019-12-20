@@ -1,8 +1,8 @@
 (function (global, factory) {
-            typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('../../../../../../../../reducers/contact-update'), require('../../../../../../../../reducers/group-update'), require('buffer')) :
-            typeof define === 'function' && define.amd ? define('index', ['../../../../../../../../reducers/contact-update', '../../../../../../../../reducers/group-update', 'buffer'], factory) :
-            (global = global || self, factory(global.contactUpdate, global.groupUpdate, global.buffer));
-}(this, function (contactUpdate, groupUpdate, buffer) { 'use strict';
+            typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('buffer')) :
+            typeof define === 'function' && define.amd ? define('index', ['buffer'], factory) :
+            (global = global || self, factory(global.buffer));
+}(this, function (buffer) { 'use strict';
 
             buffer = buffer && buffer.hasOwnProperty('default') ? buffer['default'] : buffer;
 
@@ -32308,6 +32308,7 @@
                 global$2[key$1] = "esm";
               }
             }
+            //# sourceMappingURL=react-router.js.map
 
             /**
              * The public API for a <Router> that uses HTML5 history.
@@ -32607,6 +32608,7 @@
                 style: propTypes.object
               });
             }
+            //# sourceMappingURL=react-router-dom.js.map
 
             var classnames = createCommonjsModule(function (module) {
             /*!
@@ -49902,9 +49904,7 @@
                 };
 
                 this.initialReducer = new InitialReducer();
-                this.groupUpdateReducer = new groupUpdate.GroupUpdateReducer();
                 this.permissionUpdateReducer = new PermissionUpdateReducer();
-                this.contactUpdateReducer = new contactUpdate.ContactUpdateReducer();
                 this.inviteUpdateReducer = new InviteUpdateReducer();
                 this.setState = () => {};
               }
@@ -49918,9 +49918,7 @@
 
                 console.log(json);
                 this.initialReducer.reduce(json, this.state);
-                this.groupUpdateReducer.reduce(json, this.state);
                 this.permissionUpdateReducer.reduce(json, this.state);
-                this.contactUpdateReducer.reduce(json, this.state);
                 this.inviteUpdateReducer.reduce(json, this.state);
 
                 this.setState(this.state);
@@ -49934,19 +49932,6 @@
               setAuthTokens(authTokens) {
                 this.authTokens = authTokens;
                 this.bindPaths = [];
-
-                this.groups = {
-                  add: this.groupAdd.bind(this),
-                  remove: this.groupRemove.bind(this)
-                };
-                
-                this.contacts = {
-                  create: this.contactCreate.bind(this),
-                  delete: this.contactDelete.bind(this),
-                  add: this.contactAdd.bind(this),
-                  remove: this.contactRemove.bind(this),
-                  edit: this.contactEdit.bind(this)
-                };
                 
                 this.invite = {
                   accept: this.inviteAccept.bind(this),
@@ -49985,92 +49970,6 @@
                     (err) => {
                       reject(err);
                     });
-                });
-              }
-
-              addPendingMessage(msg) {
-                if (store.state.pendingMessages.has(msg.path)) {
-                  store.state.pendingMessages.get(msg.path).push(msg.envelope);
-                } else {
-                  store.state.pendingMessages.set(msg.path, [msg.envelope]);
-                }
-
-                store.setState({
-                  pendingMessages: store.state.pendingMessages
-                });
-              }
-
-              groupsAction(data) {
-                this.action("group-store", "group-action", data);
-              }
-
-              groupAdd(members, path) {
-                this.groupsAction({
-                  add: {
-                    members, path
-                  }
-                });
-              }
-
-              groupRemove(members, path) {
-                this.groupsAction({
-                  remove: {
-                    members, path
-                  }
-                });
-              }
-
-              contactAction(data) {
-                this.action("contact-store", "json", data);
-              }
-
-              contactCreate(path) {
-                this.contactAction({ create: { path }});
-              }
-
-              contactDelete(path) {
-                this.contactAction({ delete: { path }});
-              }
-
-              contactAdd(path, ship, contact = {
-                nickname: '',
-                email: '',
-                phone: '',
-                website: '',
-                notes: '',
-                color: '0x000000',
-                avatar: null
-              }) {
-                this.contactAction({
-                  add: {
-                    path, ship, contact
-                  }
-                });
-              }
-
-              contactRemove(path, ship) {
-                this.contactAction({
-                  remove: {
-                    path, ship
-                  }
-                });
-              }
-
-              contactEdit(path, ship, editField) {
-                /* editField can be...
-                {nickname: ''}
-                {email: ''}
-                {phone: ''}
-                {website: ''}
-                {notes: ''}
-                {color: '0xfff'}
-                {avatar: null}
-                {avatar: {p: length, q: bytestream}}
-                */
-                this.contactAction({
-                  edit: {
-                    path, ship, 'edit-field': editField
-                  }
                 });
               }
 
@@ -58654,17 +58553,6 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 // TODO: resubscribe
               }
 
-              fetchMessages(start, end, path) {
-                console.log(start, end, path);
-                fetch(`/~chat/paginate/${start}/${end}${path}`)
-                  .then((response) => response.json())
-                  .then((json) => {
-                    store.handleEvent({
-                      data: json
-                    });
-                  });
-              }
-
             }
 
             let subscription = new Subscription();
@@ -58712,7 +58600,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 return (
                   react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 31}}
                     , react.createElement('div', {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 32}}
-                    , react.createElement(Route, { exact: true, path: "/~contacts",
+                    , react.createElement(Route, { exact: true, path: "/~link",
                       render:  (props) => {
                         return (
                           react.createElement(Skeleton, {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 36}}

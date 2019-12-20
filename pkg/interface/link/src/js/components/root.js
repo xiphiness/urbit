@@ -30,7 +30,7 @@ export class Root extends Component {
     return (
       <BrowserRouter>
         <div>
-        <Route exact path="/~contacts"
+        <Route exact path="/~link"
           render={ (props) => {
             return (
               <Skeleton>

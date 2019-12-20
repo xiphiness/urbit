@@ -48,17 +48,6 @@ export class Subscription {
     // TODO: resubscribe
   }
 
-  fetchMessages(start, end, path) {
-    console.log(start, end, path);
-    fetch(`/~chat/paginate/${start}/${end}${path}`)
-      .then((response) => response.json())
-      .then((json) => {
-        store.handleEvent({
-          data: json
-        });
-      });
-  }
-
 }
 
 export let subscription = new Subscription();

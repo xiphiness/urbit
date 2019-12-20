@@ -9,12 +9,12 @@ export default class LinkTile extends Component {
     const { props } = this;
 
     return (
-      <div className="w-100 h-100 relative" style={{ background: "#286E55" }}>
-        <a className="w-100 h-100 db pa2 no-underline" href="/~contacts">
+      <div className="w-100 h-100 relative" style={{ background: "#222222" }}>
+        <a className="w-100 h-100 db pa2 no-underline" href="/~link">
           <p
             className="white label-regular b absolute"
             style={{ left: 8, top: 4 }}>
-            Contacts
+            Links
           </p>
           <img
             className="absolute"
