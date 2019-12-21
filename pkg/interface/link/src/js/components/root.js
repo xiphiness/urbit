@@ -29,7 +29,6 @@ export class Root extends Component {
 
     return (
       <BrowserRouter>
-        <div>
         <Route exact path="/~link"
           render={ (props) => {
             return (
@@ -42,7 +41,6 @@ export class Root extends Component {
               </Skeleton>
             );
           }} />
-        </div>
       </BrowserRouter>
     )
   }

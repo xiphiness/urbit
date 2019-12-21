@@ -19377,7 +19377,7 @@
             }.call(commonjsGlobal));
             });
 
-            const _jsxFileName = "/Users/matilde/git/urbit/pkg/interface/link/tile/tile.js";
+            const _jsxFileName = "/Users/matilde/git/tlon/urbit/pkg/interface/link/tile/tile.js";
 
             class LinkTile extends react_1 {
 

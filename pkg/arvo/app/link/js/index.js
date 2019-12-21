@@ -58557,13 +58557,13 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
 
             let subscription = new Subscription();
 
-            const _jsxFileName = "/Users/matilde/git/urbit/pkg/interface/link/src/js/components/skeleton.js";
+            const _jsxFileName = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/skeleton.js";
 
             class Skeleton extends react_1 {
               render() {
                 return (
-                  react.createElement('div', { className: "h-100 w-100 absolute"  , __self: this, __source: {fileName: _jsxFileName, lineNumber: 8}}
-                    , react.createElement('div', { className: "cf w-100 absolute flex"   ,
+                  react.createElement('div', { className: "h-100 w-100" , __self: this, __source: {fileName: _jsxFileName, lineNumber: 8}}
+                    , react.createElement('div', { className: "cf w-100 flex"  ,
                       style: {
                         height: 'calc(100% - 48px)'
                       }, __self: this, __source: {fileName: _jsxFileName, lineNumber: 9}}
@@ -58578,7 +58578,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               }
             }
 
-            const _jsxFileName$1 = "/Users/matilde/git/urbit/pkg/interface/link/src/js/components/root.js";
+            const _jsxFileName$1 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/root.js";
 
             class Root extends react_1 {
               constructor(props) {
@@ -58599,26 +58599,24 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
 
                 return (
                   react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 31}}
-                    , react.createElement('div', {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 32}}
                     , react.createElement(Route, { exact: true, path: "/~link",
                       render:  (props) => {
                         return (
-                          react.createElement(Skeleton, {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 36}}
-                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column"    , __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 37}}
-                              , react.createElement('div', { className: "pl3 pr3 pt2 pb3"   , __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 38}}
-                                , react.createElement('h2', {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 39}}, "Home")
+                          react.createElement(Skeleton, {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 35}}
+                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column"    , __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 36}}
+                              , react.createElement('div', { className: "pl3 pr3 pt2 pb3"   , __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 37}}
+                                , react.createElement('h2', {__self: this, __source: {fileName: _jsxFileName$1, lineNumber: 38}}, "Home")
                               )
                             )
                           )
                         );
-                      }, __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 33}} )
-                    )
+                      }, __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 32}} )
                   )
                 )
               }
             }
 
-            const _jsxFileName$2 = "/Users/matilde/git/urbit/pkg/interface/link/src/index.js";
+            const _jsxFileName$2 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/index.js";
             api.setAuthTokens({
               ship: window.ship
             });
