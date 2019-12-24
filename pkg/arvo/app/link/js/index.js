@@ -32308,7 +32308,6 @@
                 global$2[key$1] = "esm";
               }
             }
-            //# sourceMappingURL=react-router.js.map
 
             /**
              * The public API for a <Router> that uses HTML5 history.
@@ -32608,7 +32607,6 @@
                 style: propTypes.object
               });
             }
-            //# sourceMappingURL=react-router-dom.js.map
 
             var classnames = createCommonjsModule(function (module) {
             /*!

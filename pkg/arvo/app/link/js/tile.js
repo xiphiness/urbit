@@ -19384,17 +19384,17 @@
               render() {
 
                 return (
-                  react.createElement('div', { className: "w-100 h-100 relative"  , style: { background: "#222222" }, __self: this, __source: {fileName: _jsxFileName, lineNumber: 12}}
+                  react.createElement('div', { className: "w-100 h-100 relative ba b--black"    , style: { background: "#FFFFFF" }, __self: this, __source: {fileName: _jsxFileName, lineNumber: 12}}
                     , react.createElement('a', { className: "w-100 h-100 db pa2 no-underline"    , href: "/~link", __self: this, __source: {fileName: _jsxFileName, lineNumber: 13}}
                       , react.createElement('p', {
-                        className: "white label-regular b absolute"   ,
+                        className: "label-regular b absolute"  ,
                         style: { left: 8, top: 4 }, __self: this, __source: {fileName: _jsxFileName, lineNumber: 14}}, "Links"
 
                       )
                       , react.createElement('img', {
                         className: "absolute",
                         style: { left: 69, top: 69 },
-                        src: "/~contacts/img/Tile.png",
+                        src: "/~link/img/Tile.png",
                         width: 96,
                         height: 96, __self: this, __source: {fileName: _jsxFileName, lineNumber: 19}}
                       )
