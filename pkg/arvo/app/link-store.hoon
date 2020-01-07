@@ -196,8 +196,8 @@
   =/  fact
     :-  %link-update
     !>([%annotations path url [note]~])
-  :*  [%give %fact `[%annotations (snoc path url)] fact]
-      [%give %fact `[%annotations path] fact]
+  :*  [%give %fact ~[%annotations (snoc path url)] fact]
+      [%give %fact ~[%annotations path] fact]
       cards
   ==
 ::  +hear-submission: record page someone else saved
@@ -242,8 +242,8 @@
   =/  fact
     :-  %link-update
     !>([%discussions path url [comment]~])
-  :~  [%give %fact `[%discussions (snoc path url)] fact]
-      [%give %fact `[%discussions path] fact]
+  :~  [%give %fact ~[%discussions (snoc path url)] fact]
+      [%give %fact ~[%discussions path] fact]
   ==
 ::
 ::  reading

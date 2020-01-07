@@ -81,7 +81,7 @@
     ?>  (team:title our.bowl src.bowl)
     ?:  ?=([%http-response *] path)  [~ this]
     ?.  =(/primary path)  (on-watch:def path)
-    [[%give %fact []~ %json !>((rolodex-to-json all-scry:cc))]~ this]
+    [[%give %fact [~] %json !>((rolodex-to-json all-scry:cc))]~ this]
   ::
   ++  on-agent
     |=  [=wire =sign:agent:gall]
