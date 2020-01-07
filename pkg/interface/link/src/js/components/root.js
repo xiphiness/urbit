@@ -32,11 +32,8 @@ export class Root extends Component {
         <Route exact path="/~link"
           render={ (props) => {
             return (
-              <Skeleton>
-                <div className="h-100 w-100 overflow-x-hidden flex flex-column">
-                  <div className="pl3 pr3 pt2 pb3">
-                    <h2>Home</h2>
-                  </div>
+              <Skeleton active="channels">
+                <div className="h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns">
                 </div>
               </Skeleton>
             );
