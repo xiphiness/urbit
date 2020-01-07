@@ -172,7 +172,7 @@
 ++  update-subscribers
   |=  [pax=path update=contact-update]
   ^-  (list card)
-  [%give %fact `pax %contact-update !>(update)]~
+  [%give %fact ~[pax] %contact-update !>(update)]~
 ::
 ++  send-diff
   |=  [pax=path upd=contact-update]
