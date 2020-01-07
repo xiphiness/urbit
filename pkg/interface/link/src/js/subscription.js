@@ -7,17 +7,13 @@ import urbitOb from 'urbit-ob';
 export class Subscription {
   start() {
     if (api.authTokens) {
-      this.initializeChat();
+      this.initializeLinks();
     } else {
       console.error("~~~ ERROR: Must set api.authTokens before operation ~~~");
     }
   }
 
-  initializeChat() {
-    api.bind('/primary', 'PUT', api.authTokens.ship, 'chat-view',
-      this.handleEvent.bind(this),
-      this.handleError.bind(this),
-      this.handleQuitAndResubscribe.bind(this));
+  initializeLinks() {
     api.bind('/primary', 'PUT', api.authTokens.ship, 'invite-view',
       this.handleEvent.bind(this),
       this.handleError.bind(this),

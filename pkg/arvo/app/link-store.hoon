@@ -169,7 +169,7 @@
   :_  state
   :_  cards
   :+  %give  %fact
-  :+  `[%local-pages path]
+  :+  [%local-pages path]~
     %link-update
   !>([%local-pages path [page]~])
 ::  +note-note: save a note for a url
@@ -220,7 +220,7 @@
   :_  state
   :_  ~
   :+  %give  %fact
-  :+  `[%submissions path]
+  :+  [%submissions path]~
     %link-update
   !>([%submissions path [submission]~])
 ::  +read-comment: record a comment someone else made

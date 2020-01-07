@@ -171,15 +171,15 @@
 ++  kick-proxy
   |=  [who=ship =path]
   ^-  card
-  [%give %kick `path `who]
+  [%give %kick ~[path] `who]
 ::
 ++  handle-proxy-sign
   |=  [=wire =sign:agent:gall]
   ^-  (quip card _state)
   ?-  -.sign
-    %poke-ack     ~|([dap.bowl %unexpected-poke-ack wire] !!)
-    %fact         [[%give %fact `wire cage.sign]~ state]
-    %kick         [[(proxy-pass-link-store wire %watch wire)]~ state]
+    %poke-ack     ~|([dap.bowl %unexpected-poke-ack path] !!)
+    %fact         [[%give %fact ~[path] cage.sign]~ state]
+    %kick         [[(proxy-pass-link-store path %watch path)]~ state]
   ::
       %watch-ack
     ?~  p.sign  [~ state]
