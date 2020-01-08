@@ -58531,6 +58531,10 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                   this.handleEvent.bind(this),
                   this.handleError.bind(this),
                   this.handleQuitAndResubscribe.bind(this));
+                api.bind('/primary', 'PUT', api.authTokens.ship, 'contact-view',
+                  this.handleEvent.bind(this),
+                  this.handleError.bind(this),
+                  this.handleQuitAndResubscribe.bind(this));
               }
 
               handleEvent(diff) {
@@ -58599,17 +58603,87 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               }
             }
 
-            const _jsxFileName$3 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/skeleton.js";
+            const _jsxFileName$3 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/lib/channels-item.js";
+            class ChannelsItem extends react_1 {
+              render() {
+                const { props } = this;
+
+                let selectedClass = (props.selected) ? "bg-gray4" : "";
+                let memberCount = Object.keys(props.contacts).length;
+
+                return (
+                  react.createElement(Link, { to: "/~link" + props.link, __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 13}}
+                    , react.createElement('div', { className: "w-100 v-mid f9 pl4 " + selectedClass, __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 14}}
+                      , react.createElement('p', { className: "f9 pt1" , __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 15}}, props.name)
+                      , react.createElement('p', { className: "f9 pb1 gray2"  , __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 16}}
+                        ,  memberCount + " Member" + ((memberCount === 1) ? "" : "s") 
+                      )
+                    )
+                  )
+                );
+              }
+            }
+
+            const _jsxFileName$4 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/lib/channel-sidebar.js";
+            class ChannelsSidebar extends react_1 {
+              // drawer to the left
+
+              render() {
+                const { props, state } = this;
+
+                let channelItems =
+                  Object.keys(props.paths)
+                  .filter((path) => {
+                    return (!path.startsWith("/~/") || path === "/~/default")
+                  })
+                  .map((path) => {
+                    let name = path.substr(1);
+                    let nameSeparator = name.indexOf("/");
+                    (name === "/~/default")
+                      ? name = name.substr(2)
+                      : name = name.substr(nameSeparator + 1); // hides owner of list from UI
+                                                               // if unwanted, remove this
+                      let selected = (this.props.selected === path);
+                    return (
+                      react.createElement(ChannelsItem, {
+                        key: path,
+                        link: path,
+                        selected: selected,
+                        name: name, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 26}})
+                    )
+                  });
+
+                let activeClasses = (this.props.active === "channels") ? "" : "dn-s";
+
+                return (
+                  react.createElement('div', { className: `bn br-m br-l br-xl b--black lh-copy h-100 flex-basis-100-s
+       flex-basis-30-ns flex-shrink-0 mw5-m mw5-l mw5-xl pt3 pt0-m pt0-l pt0-xl
+        relative ` + activeClasses, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 37}}
+                    , react.createElement('a', { className: "db dn-m dn-l dn-xl f8 pb6 pl3"      , href: "/", __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 40}}, "⟵ Landscape" )
+                    , react.createElement('div', { className: "overflow-y-scroll h-100" , __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 41}}
+                      , react.createElement('h2', { className: "f9 pt4 pr4 pb2 pl4 gray2 c-default"      , __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 42}}, "Your Channels" )
+                      , channelItems
+                    )
+                  )
+                );
+              }
+            }
+
+            const _jsxFileName$5 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/skeleton.js";
 
             class Skeleton extends react_1 {
               render() {
                 return (
-                  react.createElement('div', { className: "h-100 w-100" , __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 9}}
-                  , react.createElement(HeaderBar, { spinner: this.props.spinner, __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 10}} )
-                    , react.createElement('div', { className: "cf w-100 h-100 h-100-m-48-ns flex"    , __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 11}}
+                  react.createElement('div', { className: "h-100 w-100" , __self: this, __source: {fileName: _jsxFileName$5, lineNumber: 10}}
+                  , react.createElement(HeaderBar, { spinner: this.props.spinner, __self: this, __source: {fileName: _jsxFileName$5, lineNumber: 11}} )
+                    , react.createElement('div', { className: "cf w-100 h-100 h-100-m-48-ns flex"    , __self: this, __source: {fileName: _jsxFileName$5, lineNumber: 12}}
+                    , react.createElement(ChannelsSidebar, {
+                        paths: this.props.paths, 
+                        active: this.props.active,
+                        selected: this.props.selected, __self: this, __source: {fileName: _jsxFileName$5, lineNumber: 13}})
                       , react.createElement('div', { className: "h-100 w-100" , style: {
                         flexGrow: 1,
-                      }, __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 12}}
+                      }, __self: this, __source: {fileName: _jsxFileName$5, lineNumber: 17}}
                         , this.props.children
                       )
                     )
@@ -58618,7 +58692,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               }
             }
 
-            const _jsxFileName$4 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/root.js";
+            const _jsxFileName$6 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/root.js";
 
             class Root extends react_1 {
               constructor(props) {
@@ -58636,24 +58710,28 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               }
 
               render() {
+                const { props, state } = this;
+
+                let paths = !!state.paths ? state.paths : {};
+
 
                 return (
-                  react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$4, lineNumber: 31}}
+                  react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$6, lineNumber: 34}}
                     , react.createElement(Route, { exact: true, path: "/~link",
                       render:  (props) => {
                         return (
-                          react.createElement(Skeleton, { active: "channels", __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 35}}
-                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 36}}
+                          react.createElement(Skeleton, { active: "channels", paths: paths, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 38}}
+                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 39}}
                             )
                           )
                         );
-                      }, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 32}} )
+                      }, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 35}} )
                   )
                 )
               }
             }
 
-            const _jsxFileName$5 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/index.js";
+            const _jsxFileName$7 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/index.js";
             api.setAuthTokens({
               ship: window.ship
             });
@@ -58661,7 +58739,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
             subscription.start();
 
             reactDom.render((
-              react.createElement(Root, {__self: undefined, __source: {fileName: _jsxFileName$5, lineNumber: 15}} )
+              react.createElement(Root, {__self: undefined, __source: {fileName: _jsxFileName$7, lineNumber: 15}} )
             ), document.querySelectorAll("#root")[0]);
 
 }));

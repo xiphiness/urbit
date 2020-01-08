@@ -27,12 +27,15 @@ export class Root extends Component {
   render() {
     const { props, state } = this;
 
+    let paths = !!state.paths ? state.paths : {};
+
+
     return (
       <BrowserRouter>
         <Route exact path="/~link"
           render={ (props) => {
             return (
-              <Skeleton active="channels">
+              <Skeleton active="channels" paths={paths}>
                 <div className="h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns">
                 </div>
               </Skeleton>
