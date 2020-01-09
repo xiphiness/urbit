@@ -7,6 +7,7 @@ import { api } from '/api';
 import { subscription } from '/subscription';
 import { store } from '/store';
 import { Skeleton } from '/components/skeleton';
+import { Links } from '/components/links';
 
 
 export class Root extends Component {
@@ -46,6 +47,26 @@ export class Root extends Component {
               </Skeleton>
             );
           }} />
+          <Route exact path="/~link/:ship/:channel"
+            render={ (props) => {
+              // groups/contacts and link channels are the same thing
+              //TODO default to no metadata if not in a group channel
+              let groupPath = 
+              `/${props.match.params.ship}/${props.match.params.channel}`;
+              let groupMembers = paths[groupPath] || {};
+
+              return (
+                <Skeleton
+                spinner={state.spinner}
+                paths={paths}
+                active="links"
+                selected={groupPath}>
+                  <Links
+                  members={groupMembers}/>
+                </Skeleton>
+              )
+            }}
+          />
       </BrowserRouter>
     )
   }

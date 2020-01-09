@@ -49770,6 +49770,11 @@
                 if (data) {
                   state.contacts = data;
                 }
+              
+              data = lodash.get(json, 'link', false);
+              if (data) {
+                lodash.extend(state.links, data);
+              }
               }
             }
 
@@ -49826,6 +49831,7 @@
                 this.state = {
                   contacts: {},
                   groups: {},
+                  links: {},
                   permissions: {},
                   spinner: false
                 };
@@ -49835,14 +49841,38 @@
                 this.setState = () => {};
               }
 
+              async loadLinks(json) {
+                // if initial contacts, queue up getting these paths from link-store
+                let data = lodash.get(json, 'contact-initial', false);
+                if (data) {
+                  for (let each of Object.keys(data)) {
+                    let linkUrl = "/~link/submissions" + each + ".json?p=0";
+                    let promise = await fetch(linkUrl);
+                    if (promise.ok) {
+                      let resolvedData = {};
+                      resolvedData.link = {};
+                      resolvedData.link[each] = {};
+                      resolvedData.link[each] = await promise.json();
+                      this.handleEvent(resolvedData);
+                    }
+                  }
+                }
+              }
+
               setStateHandler(setState) {
                 this.setState = setState;
               }
 
               handleEvent(data) {
-                let json = data.data;
+                let json;
+                if (data.data) {
+                  json = data.data;
+                } else {
+                  json = data;
+                }
 
                 console.log(json);
+                this.loadLinks(json);
                 this.initialReducer.reduce(json, this.state);
                 this.permissionUpdateReducer.reduce(json, this.state);
 
@@ -58627,7 +58657,18 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               }
             }
 
-            const _jsxFileName$6 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/root.js";
+            const _jsxFileName$6 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/links.js";
+            class Links extends react_1 {
+              render() {
+                return (
+                  react.createElement('div', {__self: this, __source: {fileName: _jsxFileName$6, lineNumber: 6}}
+
+                  )
+                )
+              }
+            }
+
+            const _jsxFileName$7 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/root.js";
 
             class Root extends react_1 {
               constructor(props) {
@@ -58651,27 +58692,47 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
 
 
                 return (
-                  react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$6, lineNumber: 34}}
+                  react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$7, lineNumber: 35}}
                     , react.createElement(Route, { exact: true, path: "/~link",
                       render:  (props) => {
                         return (
-                          react.createElement(Skeleton, { active: "channels", paths: paths, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 38}}
-                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 39}}
-                            , react.createElement('div', { className: "pl3 pr3 pt2 dt pb3 w-100 h-100"      , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 40}}
-                                  , react.createElement('p', { className: "f8 pt3 gray2 w-100 h-100 dtc v-mid tc"       , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 41}}, "Channels are shared across groups. To create a new channel, "
-                                              , react.createElement('a', { className: "gray4", href: "/~contacts", __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 42}}, "create a group"  ), "."
+                          react.createElement(Skeleton, { active: "channels", paths: paths, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 39}}
+                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 40}}
+                            , react.createElement('div', { className: "pl3 pr3 pt2 dt pb3 w-100 h-100"      , __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 41}}
+                                  , react.createElement('p', { className: "f8 pt3 gray2 w-100 h-100 dtc v-mid tc"       , __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 42}}, "Channels are shared across groups. To create a new channel, "
+                                              , react.createElement('a', { className: "gray4", href: "/~contacts", __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 43}}, "create a group"  ), "."
                                   )
                                 )
                             )
                           )
                         );
-                      }, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 35}} )
+                      }, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 36}} )
+                      , react.createElement(Route, { exact: true, path: "/~link/:ship/:channel",
+                        render:  (props) => {
+                          // groups/contacts and link channels are the same thing
+                          //TODO default to no metadata if not in a group channel
+                          let groupPath = 
+                          `/${props.match.params.ship}/${props.match.params.channel}`;
+                          let groupMembers = paths[groupPath] || {};
+
+                          return (
+                            react.createElement(Skeleton, {
+                            spinner: state.spinner,
+                            paths: paths,
+                            active: "links",
+                            selected: groupPath, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 59}}
+                              , react.createElement(Links, {
+                              members: groupMembers, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 64}})
+                            )
+                          )
+                        }, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 50}}
+                      )
                   )
                 )
               }
             }
 
-            const _jsxFileName$7 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/index.js";
+            const _jsxFileName$8 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/index.js";
             api.setAuthTokens({
               ship: window.ship
             });
@@ -58679,7 +58740,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
             subscription.start();
 
             reactDom.render((
-              react.createElement(Root, {__self: undefined, __source: {fileName: _jsxFileName$7, lineNumber: 15}} )
+              react.createElement(Root, {__self: undefined, __source: {fileName: _jsxFileName$8, lineNumber: 15}} )
             ), document.querySelectorAll("#root")[0]);
 
 }));

@@ -7,6 +7,11 @@ export class InitialReducer {
     if (data) {
       state.contacts = data;
     }
+  
+  data = _.get(json, 'link', false);
+  if (data) {
+    _.extend(state.links, data);
+  }
   }
 }
 
