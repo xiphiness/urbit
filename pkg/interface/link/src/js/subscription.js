@@ -14,18 +14,7 @@ export class Subscription {
   }
 
   initializeLinks() {
-    api.bind('/primary', 'PUT', api.authTokens.ship, 'invite-view',
-      this.handleEvent.bind(this),
-      this.handleError.bind(this),
-      this.handleQuitAndResubscribe.bind(this));
-    api.bind('/all', 'PUT', api.authTokens.ship, 'group-store',
-      this.handleEvent.bind(this),
-      this.handleError.bind(this),
-      this.handleQuitAndResubscribe.bind(this));
-    api.bind('/all', 'PUT', api.authTokens.ship, 'permission-store',
-      this.handleEvent.bind(this),
-      this.handleError.bind(this),
-      this.handleQuitAndResubscribe.bind(this));
+    // add invite, permissions flows once link stores are more than group-specific
     api.bind('/primary', 'PUT', api.authTokens.ship, 'contact-view',
       this.handleEvent.bind(this),
       this.handleError.bind(this),

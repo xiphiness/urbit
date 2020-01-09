@@ -49766,83 +49766,11 @@
 
             class InitialReducer {
               reduce(json, state) {
-                let data = lodash.get(json, 'chat-initial', false);
+              let data = lodash.get(json, 'contact-initial', false);
                 if (data) {
-                  state.inbox = data;
-                }
-
-                data = lodash.get(json, 'group-initial', false);
-                if (data) {
-                  for (let group in data) {
-                    state.groups[group] = new Set(data[group]);
-                  }
-                }
-
-                data = lodash.get(json, 'permission-initial', false);
-                if (data) {
-                  for (let perm in data) {
-                    state.permissions[perm] = {
-                      who: new Set(data[perm].who),
-                      kind: data[perm].kind
-                    };
-                  }
-                }
-
-                data = lodash.get(json, 'invite-initial', false);
-                if (data) {
-                  state.invites = data;
+                  state.contacts = data;
                 }
               }
-            }
-
-            class InviteUpdateReducer {
-              reduce(json, state) {
-                let data = lodash.get(json, 'invite-update', false);
-                if (data) {
-                  this.create(data, state);
-                  this.delete(data, state);
-                  this.invite(data, state);
-                  this.accepted(data, state);
-                  this.decline(data, state);
-                }
-              }
-
-              create(json, state) {
-                let data = lodash.get(json, 'create', false);
-                if (data) {
-                  state.invites[data.path] = {};
-                }
-              }
-
-              delete(json, state) {
-                let data = lodash.get(json, 'delete', false);
-                if (data) {
-                  delete state.invites[data.path];
-                }
-              }
-
-              invite(json, state) {
-                let data = lodash.get(json, 'invite', false);
-                if (data) {
-                  state.invites[data.path][data.uid] = data.invite;
-                }
-              }
-
-              accepted(json, state) {
-                let data = lodash.get(json, 'accepted', false);
-                if (data) {
-                  console.log(data);
-                  delete state.invites[data.path][data.uid];
-                }
-              }
-
-              decline(json, state) {
-                let data = lodash.get(json, 'decline', false);
-                if (data) {
-                  delete state.invites[data.path][data.uid];
-                }
-              }
-
             }
 
             class PermissionUpdateReducer {
@@ -49899,13 +49827,11 @@
                   contacts: {},
                   groups: {},
                   permissions: {},
-                  invites: {},
                   spinner: false
                 };
 
                 this.initialReducer = new InitialReducer();
                 this.permissionUpdateReducer = new PermissionUpdateReducer();
-                this.inviteUpdateReducer = new InviteUpdateReducer();
                 this.setState = () => {};
               }
 
@@ -49919,7 +49845,6 @@
                 console.log(json);
                 this.initialReducer.reduce(json, this.state);
                 this.permissionUpdateReducer.reduce(json, this.state);
-                this.inviteUpdateReducer.reduce(json, this.state);
 
                 this.setState(this.state);
               }
@@ -58519,18 +58444,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               }
 
               initializeLinks() {
-                api.bind('/primary', 'PUT', api.authTokens.ship, 'invite-view',
-                  this.handleEvent.bind(this),
-                  this.handleError.bind(this),
-                  this.handleQuitAndResubscribe.bind(this));
-                api.bind('/all', 'PUT', api.authTokens.ship, 'group-store',
-                  this.handleEvent.bind(this),
-                  this.handleError.bind(this),
-                  this.handleQuitAndResubscribe.bind(this));
-                api.bind('/all', 'PUT', api.authTokens.ship, 'permission-store',
-                  this.handleEvent.bind(this),
-                  this.handleError.bind(this),
-                  this.handleQuitAndResubscribe.bind(this));
+                // add invite, permissions flows once link stores are more than group-specific
                 api.bind('/primary', 'PUT', api.authTokens.ship, 'contact-view',
                   this.handleEvent.bind(this),
                   this.handleError.bind(this),
@@ -58609,7 +58523,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 const { props } = this;
 
                 let selectedClass = (props.selected) ? "bg-gray4" : "";
-                let memberCount = Object.keys(props.contacts).length;
+                let memberCount = Object.keys(props.members).length;
 
                 return (
                   react.createElement(Link, { to: "/~link" + props.link, __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 13}}
@@ -58631,25 +58545,43 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               render() {
                 const { props, state } = this;
 
-                let channelItems =
+                let privateChannel =
                   Object.keys(props.paths)
                   .filter((path) => {
-                    return (!path.startsWith("/~/") || path === "/~/default")
+                    return (path === "/~/default")
                   })
                   .map((path) => {
-                    let name = path.substr(1);
-                    let nameSeparator = name.indexOf("/");
-                    (name === "/~/default")
-                      ? name = name.substr(2)
-                      : name = name.substr(nameSeparator + 1); // hides owner of list from UI
-                                                               // if unwanted, remove this
-                      let selected = (this.props.selected === path);
+                    let name = "Private";
+                    let selected = (this.props.selected === path);
                     return (
                       react.createElement(ChannelsItem, {
                         key: path,
                         link: path,
+                        members: props.paths[path],
                         selected: selected,
-                        name: name, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 26}})
+                        name: name, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 21}})
+                    )
+                  });
+
+                let channelItems =
+                  Object.keys(props.paths)
+                  .filter((path) => {
+                    return (!path.startsWith("/~/"))
+                  })
+                  .map((path) => {
+                    let name = path.substr(1);
+                    let nameSeparator = name.indexOf("/");
+                    name = name.substr(nameSeparator + 1);
+
+                    let selected = (this.props.selected === path);
+                    
+                    return (
+                      react.createElement(ChannelsItem, {
+                        key: path,
+                        link: path,
+                        members: props.paths[path],
+                        selected: selected,
+                        name: name, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 43}})
                     )
                   });
 
@@ -58658,10 +58590,13 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 return (
                   react.createElement('div', { className: `bn br-m br-l br-xl b--black lh-copy h-100 flex-basis-100-s
        flex-basis-30-ns flex-shrink-0 mw5-m mw5-l mw5-xl pt3 pt0-m pt0-l pt0-xl
-        relative ` + activeClasses, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 37}}
-                    , react.createElement('a', { className: "db dn-m dn-l dn-xl f8 pb6 pl3"      , href: "/", __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 40}}, "⟵ Landscape" )
-                    , react.createElement('div', { className: "overflow-y-scroll h-100" , __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 41}}
-                      , react.createElement('h2', { className: "f9 pt4 pr4 pb2 pl4 gray2 c-default"      , __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 42}}, "Your Channels" )
+        relative ` + activeClasses, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 55}}
+                    , react.createElement('a', { className: "db dn-m dn-l dn-xl f8 pb6 pl3"      , href: "/", __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 58}}, "⟵ Landscape" )
+                    , react.createElement('div', { className: "overflow-y-scroll h-100" , __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 59}}
+                      , react.createElement('div', { className: "pt4", __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 60}}
+                      , privateChannel
+                      )
+                      , react.createElement('h2', { className: "f9 pt4 pr4 pb2 pl4 gray2 c-default"      , __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 63}}, "Your Channels" )
                       , channelItems
                     )
                   )
@@ -58712,7 +58647,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               render() {
                 const { props, state } = this;
 
-                let paths = !!state.paths ? state.paths : {};
+                let paths = !!state.contacts ? state.contacts : {};
 
 
                 return (
@@ -58722,6 +58657,11 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                         return (
                           react.createElement(Skeleton, { active: "channels", paths: paths, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 38}}
                             , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 39}}
+                            , react.createElement('div', { className: "pl3 pr3 pt2 dt pb3 w-100 h-100"      , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 40}}
+                                  , react.createElement('p', { className: "f8 pt3 gray2 w-100 h-100 dtc v-mid tc"       , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 41}}, "Channels are shared across groups. To create a new channel, "
+                                              , react.createElement('a', { className: "gray4", href: "/~contacts", __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 42}}, "create a group"  ), "."
+                                  )
+                                )
                             )
                           )
                         );

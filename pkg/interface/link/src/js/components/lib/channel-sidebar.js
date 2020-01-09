@@ -9,23 +9,41 @@ export class ChannelsSidebar extends Component {
   render() {
     const { props, state } = this;
 
-    let channelItems =
+    let privateChannel =
       Object.keys(props.paths)
       .filter((path) => {
-        return (!path.startsWith("/~/") || path === "/~/default")
+        return (path === "/~/default")
       })
       .map((path) => {
-        let name = path.substr(1);
-        let nameSeparator = name.indexOf("/");
-        (name === "/~/default")
-          ? name = name.substr(2)
-          : name = name.substr(nameSeparator + 1); // hides owner of list from UI
-                                                   // if unwanted, remove this
-          let selected = (this.props.selected === path);
+        let name = "Private"
+        let selected = (this.props.selected === path);
         return (
           <ChannelsItem
             key={path}
             link={path}
+            members={props.paths[path]}
+            selected={selected}
+            name={name}/>
+        )
+      })
+
+    let channelItems =
+      Object.keys(props.paths)
+      .filter((path) => {
+        return (!path.startsWith("/~/"))
+      })
+      .map((path) => {
+        let name = path.substr(1);
+        let nameSeparator = name.indexOf("/");
+        name = name.substr(nameSeparator + 1);
+
+        let selected = (this.props.selected === path);
+        
+        return (
+          <ChannelsItem
+            key={path}
+            link={path}
+            members={props.paths[path]}
             selected={selected}
             name={name}/>
         )
@@ -39,6 +57,9 @@ export class ChannelsSidebar extends Component {
         relative ` + activeClasses}>
         <a className="db dn-m dn-l dn-xl f8 pb6 pl3" href="/">⟵ Landscape</a>
         <div className="overflow-y-scroll h-100">
+          <div className="pt4">
+          {privateChannel}
+          </div>
           <h2 className="f9 pt4 pr4 pb2 pl4 gray2 c-default">Your Channels</h2>
           {channelItems}
         </div>

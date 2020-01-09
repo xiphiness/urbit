@@ -1,5 +1,4 @@
 import { InitialReducer } from '/reducers/initial';
-import { InviteUpdateReducer } from '/reducers/invite-update';
 import { PermissionUpdateReducer } from '/reducers/permission-update';
 
 
@@ -9,13 +8,11 @@ class Store {
       contacts: {},
       groups: {},
       permissions: {},
-      invites: {},
       spinner: false
     };
 
     this.initialReducer = new InitialReducer();
     this.permissionUpdateReducer = new PermissionUpdateReducer();
-    this.inviteUpdateReducer = new InviteUpdateReducer();
     this.setState = () => {};
   }
 
@@ -29,7 +26,6 @@ class Store {
     console.log(json);
     this.initialReducer.reduce(json, this.state);
     this.permissionUpdateReducer.reduce(json, this.state);
-    this.inviteUpdateReducer.reduce(json, this.state);
 
     this.setState(this.state);
   }

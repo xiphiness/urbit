@@ -7,7 +7,7 @@ export class ChannelsItem extends Component {
     const { props } = this;
 
     let selectedClass = (props.selected) ? "bg-gray4" : "";
-    let memberCount = Object.keys(props.contacts).length;
+    let memberCount = Object.keys(props.members).length;
 
     return (
       <Link to={"/~link" + props.link}>

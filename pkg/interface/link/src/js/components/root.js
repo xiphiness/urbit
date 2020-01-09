@@ -27,7 +27,7 @@ export class Root extends Component {
   render() {
     const { props, state } = this;
 
-    let paths = !!state.paths ? state.paths : {};
+    let paths = !!state.contacts ? state.contacts : {};
 
 
     return (
@@ -37,6 +37,11 @@ export class Root extends Component {
             return (
               <Skeleton active="channels" paths={paths}>
                 <div className="h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns">
+                <div className="pl3 pr3 pt2 dt pb3 w-100 h-100">
+                      <p className="f8 pt3 gray2 w-100 h-100 dtc v-mid tc">
+                        Channels are shared across groups. To create a new channel, <a className="gray4" href="/~contacts">create a group</a>.
+                      </p>
+                    </div>
                 </div>
               </Skeleton>
             );
