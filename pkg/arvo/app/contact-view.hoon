@@ -81,11 +81,7 @@
     ?>  (team:title our.bowl src.bowl)
     ?:  ?=([%http-response *] path)  [~ this]
     ?.  =(/primary path)  (on-watch:def path)
-    [[%give %fact [~] %json !>((rolodex-to-json all-scry:cc))]~ this]
-  ::
-  ++  on-agent
     |=  [=wire =sign:agent:gall]
-    ^-  (quip card _this)
     ?+  -.sign  (on-agent:def wire sign)
         %kick
       [[%pass / %agent [our.bol %contact-store] %watch /updates]~ this]
@@ -94,7 +90,7 @@
       ?+  p.cage.sign  (on-agent:def wire sign)
           %contact-update
         =/  update=json  (update-to-json !<(contact-update q.cage.sign))
-        [[%give %fact ~[/primary] %json !>(update)]~ this]
+        [[%give %fact `/primary %json !>(update)]~ this]
       ==
     ==
   ::
@@ -134,11 +130,6 @@
       %delete
     :~  (group-poke [%unbundle path.act])
         (contact-poke [%delete path.act])
-    ==
-  ::
-      %add
-    :~  (group-poke [%add [ship.act ~ ~] path.act])
-        (contact-poke [%add path.act ship.act contact.act])
     ==
   ::
       %remove
