@@ -72,8 +72,11 @@ a {
   .dn-s {
     display: none;
   }
-  .flex-basis-100-s {
+  .flex-basis-100-s, .flex-basis-full-s {
     flex-basis: 100%;
+  }
+  .h-100-m-48-s {
+    height: calc(100% - 48px);
   }
 }
 

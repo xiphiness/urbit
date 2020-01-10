@@ -1,5 +1,6 @@
 import { InitialReducer } from '/reducers/initial';
 import { PermissionUpdateReducer } from '/reducers/permission-update';
+import { LocalReducer } from '/reducers/local.js';
 import _ from 'lodash';
 
 
@@ -10,11 +11,13 @@ class Store {
       groups: {},
       links: {},
       permissions: {},
+      sidebarShown: true,
       spinner: false
     };
 
     this.initialReducer = new InitialReducer();
     this.permissionUpdateReducer = new PermissionUpdateReducer();
+    this.localReducer = new LocalReducer();
     this.setState = () => {};
   }
 
@@ -52,6 +55,7 @@ class Store {
     this.loadLinks(json);
     this.initialReducer.reduce(json, this.state);
     this.permissionUpdateReducer.reduce(json, this.state);
+    this.localReducer.reduce(json, this.state);
 
     this.setState(this.state);
   }

@@ -49,18 +49,18 @@ export class ChannelsSidebar extends Component {
         )
       });
 
-    let activeClasses = (this.props.active === "channels") ? "" : "dn-s";
+    let activeClasses = (this.props.active === "channels") ? " " : "dn-s ";
 
     return (
-      <div className={`bn br-m br-l br-xl b--black lh-copy h-100 flex-basis-100-s
-       flex-basis-30-ns flex-shrink-0 mw5-m mw5-l mw5-xl pt3 pt0-m pt0-l pt0-xl
-        relative ` + activeClasses}>
+      <div className={`bn br-m br-l br-xl b--black lh-copy h-100 
+       flex-shrink-0 mw5-m mw5-l mw5-xl pt3 pt0-m pt0-l pt0-xl
+        relative ` + activeClasses + ((this.props.sidebarShown)
+        ? "flex-basis-100-s flex-basis-30-ns"
+        : "dn")}>
         <a className="db dn-m dn-l dn-xl f8 pb6 pl3" href="/">⟵ Landscape</a>
         <div className="overflow-y-scroll h-100">
-          <div className="pt4">
-          {privateChannel}
-          </div>
           <h2 className="f9 pt4 pr4 pb2 pl4 gray2 c-default">Your Channels</h2>
+          {privateChannel}
           {channelItems}
         </div>
       </div>
