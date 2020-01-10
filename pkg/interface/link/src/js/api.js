@@ -90,6 +90,25 @@ class UrbitApi {
     });
   }
 
+  async postLink(path, url, title) {
+    let json = 
+    {'title': title,
+    'url': url
+  };
+    console.log(json);
+    console.log(JSON.stringify(json));
+    let endpoint = "/~link/add" + path;
+    let post = await fetch(endpoint, {
+      method: "POST",
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(json)
+    });
+    return await post.json();
+  }
+
   sidebarToggle() {
     let sidebarBoolean = true;
     if (store.state.sidebarShown === true) {

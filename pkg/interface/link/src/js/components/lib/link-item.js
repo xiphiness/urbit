@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import moment from 'moment';
 
+import { Sigil } from '/components/lib/icons/sigil';
+
+
 
 export class LinkItem extends Component {
   constructor(props) {
@@ -44,16 +47,26 @@ export class LinkItem extends Component {
     }
 
     return (
-      <div className="w-100 lh-copy pv6">
-        <a href={props.url}
-        className="w-100 flex">
-          <p className="f8 truncate">{props.title}
-            <span className="gray2 ml2 flex-shrink-0">{hostname} ↗</span>
-          </p>
-        </a>
-        <div className="w-100">
-          <span className={"f9 pr2 " + mono}>{props.ship}</span>
-        <span className="f9 inter gray2">{this.state.timeSinceLinkPost}</span>
+      <div className="w-100 pv3 flex">
+        <Sigil
+          ship={"~" + props.ship}
+          size={36}
+          color={"#" + props.color}
+            />
+        <div className="flex flex-column ml2">
+          <a href={props.url}
+          className="w-100 flex"
+          target="_blank">
+            <p className="f8 truncate">{props.title}
+              <span className="gray2 ml2 flex-shrink-0">{hostname} ↗</span>
+            </p>
+          </a>
+          <div className="w-100 pt1">
+            <span className={"f9 pr2 " + mono}>{(props.nickname) 
+            ? props.nickname 
+            : props.ship}</span>
+          <span className="f9 inter gray2">{this.state.timeSinceLinkPost}</span>
+          </div>
         </div>
       </div>
     )

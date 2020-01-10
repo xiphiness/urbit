@@ -3,6 +3,10 @@ import { LinksTabBar } from './lib/links-tabbar';
 import { SidebarSwitcher } from '/components/lib/icons/icon-sidebar-switch.js';
 import { Route, Link } from "react-router-dom";
 import { LinkItem } from '/components/lib/link-item.js';
+import { api } from '../api';
+
+import { uxToHex } from '../lib/util';
+
 
 export class Links extends Component {
   constructor() {
@@ -12,14 +16,23 @@ export class Links extends Component {
       linkTitle: ""
     }
     this.setLinkValue = this.setLinkValue.bind(this);
+    this.setLinkTitle = this.setLinkTitle.bind(this);
   }
 
    onClickPost() {
     let link = this.state.linkValue;
+    let title = (this.state.linkTitle)
+    ? this.state.linkTitle
+    : this.state.linkValue;
+    api.postLink(this.props.path, link, title);
   }
 
   setLinkValue(event) {
     this.setState({linkValue: event.target.value});
+  }
+
+  setLinkTitle(event) {
+    this.setState({linkTitle: event.target.value});
   }
 
   render() {
@@ -30,8 +43,8 @@ export class Links extends Component {
     let channel = props.path.substr(1);
 
     let activeClasses = (this.state.linkValue)
-    ? "b--black black pointer"
-    : "b--gray2 gray2";
+    ? "green2 pointer"
+    : "gray2";
 
     let linkPage = (props.page === 0)
     ? "page"
@@ -53,10 +66,34 @@ export class Links extends Component {
 
       let mono = true;
 
-      if (props.members[ship].nickname) {
-        ship = props.members[ship].nickname;
+
+      //TODO remove this whole shim, it's dev
+      let members = {};
+
+      if (!props.members[ship]) {
+        members = {'zod': {'nickname': '', 'avatar': 'TODO', 'color': '0x0'}};
+      } else {
+        members = props.members;
+      }
+
+      console.log(members);
+
+      let color = uxToHex('0x0');
+
+      let nickname = "";
+
+      // restore this to props.members
+      if (members[ship].nickname) {
+        nickname = members[ship].nickname;
         mono = false;
       }
+
+      if (members[ship].color !== "") {
+        color = uxToHex(members[ship].color);
+      }
+
+      //end of shim
+
 
       return(
         <LinkItem
@@ -64,7 +101,9 @@ export class Links extends Component {
         title={title}
         url={url}
         timestamp={timestamp}
+        nickname={nickname}
         ship={ship}
+        color={color}
         mono={mono}
         />
       )
@@ -102,8 +141,9 @@ export class Links extends Component {
         <div className="w-100 mt6 flex justify-center pa4">
           <div className="w-100 mw7">
             <div className="flex">
+              <div className="relative ba b--gray4 w-100 mb6">
               <textarea
-              className="ba b--gray4 pl2 w-100 f8"
+              className="pl2 w-100 f8"
               style={{
                 resize: "none",
                 height: 40,
@@ -118,12 +158,35 @@ export class Links extends Component {
                   this.onClickPost();
                 }
               }}/>
+
+              <textarea
+              className="pl2 w-100 f8"
+              style={{
+                resize: "none",
+                height: 40,
+                paddingTop: 16
+              }}
+              placeholder="Enter title"
+              onChange={this.setLinkTitle}
+              spellCheck="false"
+              rows={1}
+              onKeyPress={e => {
+                if (e.key === "Enter") {
+                  this.onClickPost();
+                }
+              }}/>
+
               <button
-                className={"ba f8 pa2 ml2 flex-shrink-0 " + activeClasses}
+                className={"absolute f8 ml2 flex-shrink-0 " + activeClasses}
                 disabled={!this.state.linkValue}
-                onClick={this.onClickPost.bind(this)}>
-                  Post Link
+                onClick={this.onClickPost.bind(this)}
+                style={{
+                  bottom: 12,
+                  right: 8
+                }}>
+                  Post
               </button>
+              </div>
             </div>
             <div>
             {LinkList}
