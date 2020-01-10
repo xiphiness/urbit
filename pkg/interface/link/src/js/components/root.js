@@ -29,6 +29,8 @@ export class Root extends Component {
     const { props, state } = this;
 
     let paths = !!state.contacts ? state.contacts : {};
+
+    let links = !!state.links ? state.links : {};
     
     return (
       <BrowserRouter>
@@ -63,6 +65,10 @@ export class Root extends Component {
 
               let popout = (props.match.params.popout);
 
+              let channelLinks = !!links[groupPath] 
+              ? links[groupPath] 
+              : {};
+
               return (
                 <Skeleton
                   spinner={state.spinner}
@@ -76,7 +82,7 @@ export class Root extends Component {
                   <Links
                   {...props}
                   members={groupMembers}
-                  links={state.links[groupPath]}
+                  links={channelLinks}
                   page={page}
                   path={groupPath}
                   popout={popout}

@@ -4,20 +4,24 @@ import { SidebarSwitcher } from '/components/lib/icons/icon-sidebar-switch.js';
 import { Route, Link } from "react-router-dom";
 import { LinkItem } from '/components/lib/link-item.js';
 
-
-
 export class Links extends Component {
   constructor() {
     super();
     this.state = {
-      linkValue: ""
+      linkValue: "",
+      linkTitle: ""
     }
     this.setLinkValue = this.setLinkValue.bind(this);
+  }
+
+   onClickPost() {
+    let link = this.state.linkValue;
   }
 
   setLinkValue(event) {
     this.setState({linkValue: event.target.value});
   }
+
   render() {
     let props = this.props;
 
@@ -26,14 +30,18 @@ export class Links extends Component {
     let channel = props.path.substr(1);
 
     let activeClasses = (this.state.linkValue)
-    ? "b--black black"
+    ? "b--black black pointer"
     : "b--gray2 gray2";
 
     let linkPage = (props.page === 0)
     ? "page"
     : "page" + props.page;
 
-    let LinkList = Object.keys(props.links[linkPage])
+    let links = !!props.links[linkPage]
+    ? props.links[linkPage]
+    : {};
+
+    let LinkList = Object.keys(links)
     .map((link) => {
 
       let linksObj = props.links[linkPage];
@@ -102,14 +110,24 @@ export class Links extends Component {
                 paddingTop: 10
               }}
               placeholder="Paste link here"
-              onChange={this.setLinkValue}/>
+              onChange={this.setLinkValue}
+              spellCheck="false"
+              rows={1}
+              onKeyPress={e => {
+                if (e.key === "Enter") {
+                  this.onClickPost();
+                }
+              }}/>
               <button
-                className={"ba f8 pa2 ml2 flex-shrink-0 " + activeClasses}>
+                className={"ba f8 pa2 ml2 flex-shrink-0 " + activeClasses}
+                disabled={!this.state.linkValue}
+                onClick={this.onClickPost.bind(this)}>
                   Post Link
               </button>
             </div>
             <div>
             {LinkList}
+            {/*TODO Pagination */}
             </div>
           </div>
         </div>
