@@ -106,7 +106,9 @@ class UrbitApi {
       },
       body: JSON.stringify(json)
     });
-    return await post.json();
+
+    let jsonResponse = await post.text();
+    console.log(jsonResponse);
   }
 
   sidebarToggle() {

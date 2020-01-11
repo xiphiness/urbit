@@ -75,9 +75,6 @@ export class Links extends Component {
       } else {
         members = props.members;
       }
-
-      console.log(members);
-
       let color = uxToHex('0x0');
 
       let nickname = "";
