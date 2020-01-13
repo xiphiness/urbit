@@ -205,14 +205,18 @@
         %css   (css-response:gen u.file)
         %png   (png-response:gen u.file)
       ==
-  ::  submissions by recency as json
+  ::  submissions by recency as json, including comment counts
   ::
       [[[~ %json] [%'~link' %submissions ^]] *]
     %-  json-response:gen
     %-  json-to-octs  ::TODO  include in +json-response:gen
     %+  page-to-json
       (get-submissions t.t.site.request-line p)
-    submission:en-json
+    |=  [=submission comments=@ud]
+    ^-  json
+    =+  s=(submission:en-json submission)
+    ?>  ?=([%o *] s)
+    o+(~(put by p.s) 'commentCount' (numb:enjs:format comments))
   ::  local links by recency as json
   ::
       [[[~ %json] [%'~link' %local-pages ^]] *]
@@ -256,8 +260,9 @@
 ++  page-size  25
 ++  get-paginated
   |*  [l=(list) p=(unit @ud)]
-  ^-  [pages=@ud page=_l]
-  :-  +((div (lent l) page-size))
+  ^-  [total=@ud pages=@ud page=_l]
+  :+  (lent l)
+    +((div (lent l) page-size))
   ?~  p  l
   %+  scag  page-size
   %+  slag  (mul u.p page-size)
@@ -265,51 +270,45 @@
 ::
 ++  page-to-json
   =,  enjs:format
-  |*  [[total-pages=@ud page=(list)] item-to-json=$-(* json)]
+  |*  $:  [total-items=@ud total-pages=@ud page=(list)]
+          item-to-json=$-(* json)
+      ==
   ^-  json
   %-  pairs
-  :~  'total-pages'^(numb total-pages)
+  :~  'total-items'^(numb total-items)
+      'total-pages'^(numb total-pages)
       'page'^a+(turn page item-to-json)
   ==
 ::
 ++  get-submissions
   |=  [=path p=(unit @ud)]
-  ^-  [@ud submissions]
+  ^-  [@ud @ud (list [submission comments=@ud])]
   =-  (get-paginated - p)
-  .^  submissions
-    %gx
-    (scot %p our.bowl)
-    %link-store
-    (scot %da now.bowl)
-    %submissions
-    (snoc path %noun)
-  ==
+  %+  turn
+    %+  scry-for  submissions
+    [%submissions path]
+  |=  =submission
+  :-  submission
+  %-  lent
+  %+  scry-for  comments
+  :-  %discussions
+  %+  snoc  path
+  %-  crip
+  (en-base64:mimes:html url.submission)
 ::
 ++  get-local-pages
   |=  [=path p=(unit @ud)]
-  ^-  [@ud pages]
+  ^-  [@ud @ud pages]
   =-  (get-paginated - p)
-  .^  pages
-    %gx
-    (scot %p our.bowl)
-    %link-store
-    (scot %da now.bowl)
-    %local-pages
-    (snoc path %noun)
-  ==
+  %+  scry-for  pages
+  [%local-pages path]
 ::
 ++  get-discussions
   |=  [=path p=(unit @ud)]
-  ^-  [@ud comments]
+  ^-  [@ud @ud comments]
   =-  (get-paginated - p)
-  .^  comments
-    %gx
-    (scot %p our.bowl)
-    %link-store
-    (scot %da now.bowl)
-    %discussions
-    (snoc path %noun)
-  ==
+  %+  scry-for  comments
+  [%discussions path]
 ::
 ++  get-file-at
   |=  [base=path file=path ext=@ta]
@@ -329,4 +328,14 @@
   %-  some
   %-  as-octs:mimes:html
   .^(@ %cx path)
+::
+++  scry-for
+  |*  [=mold =path]
+  .^  mold
+    %gx
+    (scot %p our.bowl)
+    %link-store
+    (scot %da now.bowl)
+    (snoc `^path`path %noun)
+  ==
 --
