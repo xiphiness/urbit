@@ -46,9 +46,7 @@ export class Links extends Component {
     ? "green2 pointer"
     : "gray2";
 
-    let linkPage = (props.page === 0)
-    ? "page"
-    : "page" + props.page;
+    let linkPage = "page" + props.page
 
     let links = !!props.links[linkPage]
     ? props.links[linkPage]
@@ -63,6 +61,7 @@ export class Links extends Component {
       let url = linksObj[link].url;
       let timestamp = linksObj[link].timestamp;
       let ship = linksObj[link].ship;
+      let comments = linksObj[link].commentCount;
 
       let mono = true;
 
@@ -71,7 +70,7 @@ export class Links extends Component {
       let members = {};
 
       if (!props.members[ship]) {
-        members = {'zod': {'nickname': '', 'avatar': 'TODO', 'color': '0x0'}};
+        members[ship] = {'nickname': '', 'avatar': 'TODO', 'color': '0x0'};
       } else {
         members = props.members;
       }
@@ -101,6 +100,7 @@ export class Links extends Component {
         nickname={nickname}
         ship={ship}
         color={color}
+        comments={comments}
         mono={mono}
         />
       )

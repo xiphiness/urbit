@@ -55,10 +55,20 @@ export class ChannelsSidebar extends Component {
 
     let activeClasses = (this.props.active === "channels") ? " " : "dn-s ";
 
+    let hiddenClasses = true;
+    
+    // probably a more concise way to write this
+    
+    if (this.props.popout) {
+      hiddenClasses = false;
+    } else {
+    hiddenClasses = this.props.sidebarShown;
+    }
+
     return (
       <div className={`bn br-m br-l br-xl b--gray4 lh-copy h-100 
        flex-shrink-0 mw5-m mw5-l mw5-xl pt3 pt0-m pt0-l pt0-xl
-        relative ` + activeClasses + ((this.props.sidebarShown)
+        relative ` + activeClasses + ((hiddenClasses)
         ? "flex-basis-100-s flex-basis-30-ns"
         : "dn")}>
         <a className="db dn-m dn-l dn-xl f8 pb6 pl3" href="/">⟵ Landscape</a>

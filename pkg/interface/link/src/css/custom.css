@@ -75,8 +75,8 @@ a {
   .flex-basis-100-s, .flex-basis-full-s {
     flex-basis: 100%;
   }
-  .h-100-m-48-s {
-    height: calc(100% - 48px);
+  .h-100-m-40-s {
+    height: calc(100% - 40px);
   }
 }
 
@@ -87,7 +87,7 @@ a {
   .flex-basis-30-ns {
     flex-basis: 30vw;
   }
-  .h-100-m-48-ns {
-    height: calc(100% - 48px);
+  .h-100-m-40-ns {
+    height: calc(100% - 40px);
   }
 }

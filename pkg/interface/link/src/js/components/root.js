@@ -19,6 +19,22 @@ export class Root extends Component {
     this.setSpinner = this.setSpinner.bind(this);
   }
 
+  componentDidMount() {
+    // remove window dressing on index.html if popout
+    if (window.location.href.includes("popout/")) {
+      this.popout();
+    }
+  }
+
+  popout() {
+    let root = document.getElementById("root");
+    root.classList.add("h-100");
+    root.classList.remove("h-100-m-40-ns", "ba-l", "ba-xl");
+
+    let body = document.body;
+    body.classList.remove("ph4-l", "ph4-xl", "pb4-l", "pb4-xl");
+  }
+
   setSpinner(spinner) {
     this.setState({
       spinner
@@ -64,7 +80,7 @@ export class Root extends Component {
 
               let page = props.match.params.page || 0;
 
-              let popout = (props.match.params.popout);
+              let popout = props.match.url.includes("/popout/");
 
               let channelLinks = !!links[groupPath] 
               ? links[groupPath] 

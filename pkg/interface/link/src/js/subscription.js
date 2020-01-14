@@ -14,7 +14,12 @@ export class Subscription {
   }
 
   initializeLinks() {
-    // add invite, permissions flows once link stores are more than group-specific
+    // add invite, permissions flows once link stores are more than
+    // group-specific
+    api.bind('/all', 'PUT', api.authTokens.ship, 'group-store',
+    this.handleEvent.bind(this),
+    this.handleError.bind(this),
+    this.handleQuitAndResubscribe.bind(this));
     api.bind('/primary', 'PUT', api.authTokens.ship, 'contact-view',
       this.handleEvent.bind(this),
       this.handleError.bind(this),

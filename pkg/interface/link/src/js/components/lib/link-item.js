@@ -46,6 +46,8 @@ export class LinkItem extends Component {
       hostname = hostname[4];
     }
 
+    let comments = props.comments + " comment" + ((props.comments === 1) ? "" : "s");
+
     return (
       <div className="w-100 pv3 flex">
         <Sigil
@@ -64,8 +66,9 @@ export class LinkItem extends Component {
           <div className="w-100 pt1">
             <span className={"f9 pr2 " + mono}>{(props.nickname) 
             ? props.nickname 
-            : props.ship}</span>
-          <span className="f9 inter gray2">{this.state.timeSinceLinkPost}</span>
+            : "~" + props.ship}</span>
+          <span className="f9 inter gray2 pr2">{this.state.timeSinceLinkPost}</span>
+          <span className="f9 inter gray2">{comments}</span>
           </div>
         </div>
       </div>

@@ -49779,10 +49779,21 @@
                 if (data) {
                   state.contacts = data;
                 }
+
+                data = lodash.get(json, 'group-initial', false);
+                if (data) {
+                  for (let group in data) {
+                    state.groups[group] = new Set(data[group]);
+                  }
+                }
               
               data = lodash.get(json, 'link', false);
               if (data) {
-                lodash.extend(state.links, data);
+                let name = Object.keys(data)[0];
+                state.links[name] = {};
+                state.links[name]["total-pages"] = data[name]["total-pages"];
+                state.links[name]["total-items"] = data[name]["total-items"];
+                state.links[name]["page0"] = data[name]["page"];
               }
               }
             }
@@ -58536,7 +58547,12 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               }
 
               initializeLinks() {
-                // add invite, permissions flows once link stores are more than group-specific
+                // add invite, permissions flows once link stores are more than
+                // group-specific
+                api.bind('/all', 'PUT', api.authTokens.ship, 'group-store',
+                this.handleEvent.bind(this),
+                this.handleError.bind(this),
+                this.handleQuitAndResubscribe.bind(this));
                 api.bind('/primary', 'PUT', api.authTokens.ship, 'contact-view',
                   this.handleEvent.bind(this),
                   this.handleError.bind(this),
@@ -58640,15 +58656,25 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
 
                 let activeClasses = (this.props.active === "channels") ? " " : "dn-s ";
 
+                let hiddenClasses = true;
+                
+                // probably a more concise way to write this
+                
+                if (this.props.popout) {
+                  hiddenClasses = false;
+                } else {
+                hiddenClasses = this.props.sidebarShown;
+                }
+
                 return (
                   react.createElement('div', { className: `bn br-m br-l br-xl b--gray4 lh-copy h-100 
        flex-shrink-0 mw5-m mw5-l mw5-xl pt3 pt0-m pt0-l pt0-xl
-        relative ` + activeClasses + ((this.props.sidebarShown)
+        relative ` + activeClasses + ((hiddenClasses)
                     ? "flex-basis-100-s flex-basis-30-ns"
-                    : "dn"), __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 59}}
-                    , react.createElement('a', { className: "db dn-m dn-l dn-xl f8 pb6 pl3"      , href: "/", __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 64}}, "⟵ Landscape" )
-                    , react.createElement('div', { className: "overflow-y-scroll h-100" , __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 65}}
-                      , react.createElement('h2', { className: "f9 pt4 pr4 pb2 pl4 gray2 c-default"      , __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 66}}, "Your Channels" )
+                    : "dn"), __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 69}}
+                    , react.createElement('a', { className: "db dn-m dn-l dn-xl f8 pb6 pl3"      , href: "/", __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 74}}, "⟵ Landscape" )
+                    , react.createElement('div', { className: "overflow-y-scroll h-100" , __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 75}}
+                      , react.createElement('h2', { className: "f9 pt4 pr4 pb2 pl4 gray2 c-default"      , __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 76}}, "Your Channels" )
                       , privateChannel
                       , channelItems
                     )
@@ -58666,18 +58692,23 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 ? "dn-s"
                 : "";
 
+                let popout = !!this.props.popout 
+                ? this.props.popout 
+                : false;
+
                 return (
-                  react.createElement('div', { className: "h-100 w-100" , __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 14}}
-                    , react.createElement('div', { className: `cf w-100 h-100 flex`, __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 15}}
+                  react.createElement('div', { className: "h-100 w-100" , __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 18}}
+                    , react.createElement('div', { className: `cf w-100 h-100 flex`, __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 19}}
                     , react.createElement(ChannelsSidebar, {
+                        popout: popout,
                         paths: this.props.paths, 
                         active: this.props.active,
                         selected: this.props.selected,
                         sidebarShown: this.props.sidebarShown,
-                        links: this.props.links, __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 16}})
+                        links: this.props.links, __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 20}})
                       , react.createElement('div', { className: "h-100 w-100 " + rightPanelHide, style: {
                         flexGrow: 1,
-                      }, __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 22}}
+                      }, __self: this, __source: {fileName: _jsxFileName$2, lineNumber: 27}}
                         , this.props.children
                       )
                     )
@@ -67299,26 +67330,29 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                   hostname = hostname[4];
                 }
 
+                let comments = props.comments + " comment" + ((props.comments === 1) ? "" : "s");
+
                 return (
-                  react.createElement('div', { className: "w-100 pv3 flex"  , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 50}}
+                  react.createElement('div', { className: "w-100 pv3 flex"  , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 52}}
                     , react.createElement(Sigil, {
                       ship: "~" + props.ship,
                       size: 36,
-                      color: "#" + props.color, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 51}}
+                      color: "#" + props.color, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 53}}
                         )
-                    , react.createElement('div', { className: "flex flex-column ml2"  , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 56}}
+                    , react.createElement('div', { className: "flex flex-column ml2"  , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 58}}
                       , react.createElement('a', { href: props.url,
                       className: "w-100 flex" ,
-                      target: "_blank", __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 57}}
-                        , react.createElement('p', { className: "f8 truncate" , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 60}}, props.title
-                          , react.createElement('span', { className: "gray2 ml2 flex-shrink-0"  , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 61}}, hostname, " ↗" )
+                      target: "_blank", __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 59}}
+                        , react.createElement('p', { className: "f8 truncate" , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 62}}, props.title
+                          , react.createElement('span', { className: "gray2 ml2 flex-shrink-0"  , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 63}}, hostname, " ↗" )
                         )
                       )
-                      , react.createElement('div', { className: "w-100 pt1" , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 64}}
-                        , react.createElement('span', { className: "f9 pr2 " + mono, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 65}}, (props.nickname) 
+                      , react.createElement('div', { className: "w-100 pt1" , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 66}}
+                        , react.createElement('span', { className: "f9 pr2 " + mono, __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 67}}, (props.nickname) 
                         ? props.nickname 
-                        : props.ship)
-                      , react.createElement('span', { className: "f9 inter gray2"  , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 68}}, this.state.timeSinceLinkPost)
+                        : "~" + props.ship)
+                      , react.createElement('span', { className: "f9 inter gray2 pr2"   , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 70}}, this.state.timeSinceLinkPost)
+                      , react.createElement('span', { className: "f9 inter gray2"  , __self: this, __source: {fileName: _jsxFileName$6, lineNumber: 71}}, comments)
                       )
                     )
                   )
@@ -67366,9 +67400,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 ? "green2 pointer"
                 : "gray2";
 
-                let linkPage = (props.page === 0)
-                ? "page"
-                : "page" + props.page;
+                let linkPage = "page" + props.page;
 
                 let links = !!props.links[linkPage]
                 ? props.links[linkPage]
@@ -67383,6 +67415,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                   let url = linksObj[link].url;
                   let timestamp = linksObj[link].timestamp;
                   let ship = linksObj[link].ship;
+                  let comments = linksObj[link].commentCount;
 
                   let mono = true;
 
@@ -67391,7 +67424,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                   let members = {};
 
                   if (!props.members[ship]) {
-                    members = {'zod': {'nickname': '', 'avatar': 'TODO', 'color': '0x0'}};
+                    members[ship] = {'nickname': '', 'avatar': 'TODO', 'color': '0x0'};
                   } else {
                     members = props.members;
                   }
@@ -67421,7 +67454,8 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                     nickname: nickname,
                     ship: ship,
                     color: color,
-                    mono: mono, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 96}}
+                    comments: comments,
+                    mono: mono, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 95}}
                     )
                   )
                 });
@@ -67530,6 +67564,22 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 this.setSpinner = this.setSpinner.bind(this);
               }
 
+              componentDidMount() {
+                // remove window dressing on index.html if popout
+                if (window.location.href.includes("popout/")) {
+                  this.popout();
+                }
+              }
+
+              popout() {
+                let root = document.getElementById("root");
+                root.classList.add("h-100");
+                root.classList.remove("h-100-m-40-ns", "ba-l", "ba-xl");
+
+                let body = document.body;
+                body.classList.remove("ph4-l", "ph4-xl", "pb4-l", "pb4-xl");
+              }
+
               setSpinner(spinner) {
                 this.setState({
                   spinner
@@ -67544,7 +67594,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 let links = !!state.links ? state.links : {};
                 
                 return (
-                  react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$8, lineNumber: 36}}
+                  react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$8, lineNumber: 52}}
                     , react.createElement(Route, { exact: true, path: "/~link",
                       render:  (props) => {
                         return (
@@ -67553,17 +67603,17 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                             paths: paths,
                             rightPanelHide: true,
                             sidebarShown: true,
-                            links: links, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 40}}
-                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-white dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 46}}
-                            , react.createElement('div', { className: "pl3 pr3 pt2 dt pb3 w-100 h-100"      , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 47}}
-                                  , react.createElement('p', { className: "f8 pt3 gray2 w-100 h-100 dtc v-mid tc"       , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 48}}, "Channels are shared across groups. To create a new channel, "
-                                              , react.createElement('a', { className: "black", href: "/~contacts", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 49}}, "create a group"  ), "."
+                            links: links, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 56}}
+                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-white dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 62}}
+                            , react.createElement('div', { className: "pl3 pr3 pt2 dt pb3 w-100 h-100"      , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 63}}
+                                  , react.createElement('p', { className: "f8 pt3 gray2 w-100 h-100 dtc v-mid tc"       , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 64}}, "Channels are shared across groups. To create a new channel, "
+                                              , react.createElement('a', { className: "black", href: "/~contacts", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 65}}, "create a group"  ), "."
                                   )
                                 )
                             )
                           )
                         );
-                      }, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 37}} )
+                      }, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 53}} )
                       , react.createElement(Route, { exact: true, path: "/~link/(popout)?/:ship/:channel/:page?",
                         render:  (props) => {
                           // groups/contacts and link channels are the same thing in ver 1
@@ -67575,7 +67625,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
 
                           let page = props.match.params.page || 0;
 
-                          let popout = (props.match.params.popout);
+                          let popout = props.match.url.includes("/popout/");
 
                           let channelLinks = !!links[groupPath] 
                           ? links[groupPath] 
@@ -67590,7 +67640,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                               sidebarShown: state.sidebarShown,
                               sidebarHideMobile: true,
                               popout: popout,
-                              links: links, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 74}}
+                              links: links, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 90}}
                             
                               , react.createElement(Links, {
                               ...props,
@@ -67599,18 +67649,28 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                               page: page,
                               path: groupPath,
                               popout: popout,
-                              sidebarShown: state.sidebarShown, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 84}}
+                              sidebarShown: state.sidebarShown, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 100}}
                               )
                             )
                           )
-                        }, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 56}}
+                        }, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 72}}
                       )
                   )
                 )
               }
             }
 
-            const _jsxFileName$9 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/lib/header-bar.js";
+            const _jsxFileName$9 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/lib/icons/icon-home.js";
+            class IconHome extends react_1 {
+              render() {
+                return (
+                  //TODO relocate to ~launch when OS1 is ported
+                  react.createElement('img', { src: "/~link/img/Home.png", width: 16, height: 16, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 7}} )
+                );
+              }
+            }
+
+            const _jsxFileName$a = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/lib/header-bar.js";
             class HeaderBar extends react_1 {
               render() {
                 // let spin = (this.props.spinner)
@@ -67620,31 +67680,39 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 //      </div>
                 //   :  null;
 
+                let popout = (window.location.href.includes("popout/")) 
+                ? "dn"
+                : "dn db-m db-l db-xl";
+
                 return (
-                  react.createElement('div', { className: "bg-white w-100 dn db-m db-l db-xl justify-between relative tc pt3"         ,
-                    style: { height: 40 }, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 17}}
+                  react.createElement('div', { className: "bg-white w-100 justify-between relative tc pt3 "
+                    + popout,
+                    style: { height: 40 }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 21}}
                     , react.createElement('a', { className: "dib gray2 f9 inter absolute left-0"     ,
                       href: "/",
-                      style: {top: 14}, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 19}}, "Home"
+                      style: {top: 14}, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 24}}
+                      , react.createElement(IconHome, {__self: this, __source: {fileName: _jsxFileName$a, lineNumber: 27}})
+                      , react.createElement('span', { className: "ml2 pt1 v-top lh-title"   , __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 28}}, "Home"
 
+                      )
                     )
-                    , react.createElement('span', { class: "f9 inter" , __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 24}}, "Links")
+                    , react.createElement('span', { className: "f9 inter" , __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 32}}, "Links")
                     /* {spin} */
-                    , react.createElement('div', { class: "absolute right-0 lh-copy"  ,
-                    style: {top: 12}, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 26}}
+                    , react.createElement('div', { className: "absolute right-0 lh-copy"  ,
+                    style: {top: 12}, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 34}}
                     , react.createElement(Sigil, {
                       ship: "~" + window.ship,
                       size: 16,
-                      color: "#000000", __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 28}}
+                      color: "#000000", __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 36}}
                         )
-                      , react.createElement('span', { class: "mono f9 ml2 v-top"   , __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 33}}, "~" + window.ship)
+                      , react.createElement('span', { className: "mono f9 ml2 v-top"   , __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 41}}, "~" + window.ship)
                     )
                   )
                 );
               }
             }
 
-            const _jsxFileName$a = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/index.js";
+            const _jsxFileName$b = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/index.js";
             api.setAuthTokens({
               ship: window.ship
             });
@@ -67652,11 +67720,11 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
             subscription.start();
 
             reactDom.render((
-              react.createElement(HeaderBar, {__self: undefined, __source: {fileName: _jsxFileName$a, lineNumber: 16}} )
+              react.createElement(HeaderBar, {__self: undefined, __source: {fileName: _jsxFileName$b, lineNumber: 16}} )
             ), document.getElementById("header"));
 
             reactDom.render((
-              react.createElement(Root, {__self: undefined, __source: {fileName: _jsxFileName$a, lineNumber: 20}} )
+              react.createElement(Root, {__self: undefined, __source: {fileName: _jsxFileName$b, lineNumber: 20}} )
             ), document.querySelectorAll("#root")[0]);
 
 }));

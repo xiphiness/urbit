@@ -10,10 +10,15 @@ export class Skeleton extends Component {
     ? "dn-s"
     : "";
 
+    let popout = !!this.props.popout 
+    ? this.props.popout 
+    : false;
+
     return (
       <div className="h-100 w-100">
         <div className={`cf w-100 h-100 flex`}>
         <ChannelsSidebar
+            popout={popout}
             paths={this.props.paths} 
             active={this.props.active}
             selected={this.props.selected}

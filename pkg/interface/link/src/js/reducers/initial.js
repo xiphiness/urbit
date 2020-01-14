@@ -7,10 +7,21 @@ export class InitialReducer {
     if (data) {
       state.contacts = data;
     }
+
+    data = _.get(json, 'group-initial', false);
+    if (data) {
+      for (let group in data) {
+        state.groups[group] = new Set(data[group]);
+      }
+    }
   
   data = _.get(json, 'link', false);
   if (data) {
-    _.extend(state.links, data);
+    let name = Object.keys(data)[0];
+    state.links[name] = {};
+    state.links[name]["total-pages"] = data[name]["total-pages"];
+    state.links[name]["total-items"] = data[name]["total-items"];
+    state.links[name]["page0"] = data[name]["page"];
   }
   }
 }

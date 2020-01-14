@@ -13,24 +13,32 @@ export class HeaderBar extends Component {
     //      </div>
     //   :  null;
 
+    let popout = (window.location.href.includes("popout/")) 
+    ? "dn"
+    : "dn db-m db-l db-xl";
+
     return (
-      <div className="bg-white w-100 dn db-m db-l db-xl justify-between relative tc pt3"
+      <div className={"bg-white w-100 justify-between relative tc pt3 "
+        + popout}
         style={{ height: 40 }}>
         <a className="dib gray2 f9 inter absolute left-0"
           href='/'
           style={{top: 14}}>
+          <IconHome/>
+          <span className="ml2 pt1 v-top lh-title">
           Home
+          </span>
         </a>
-        <span class="f9 inter">Links</span>
+        <span className="f9 inter">Links</span>
         {/* {spin} */}
-        <div class="absolute right-0 lh-copy"
+        <div className="absolute right-0 lh-copy"
         style={{top: 12}}>
         <Sigil
           ship={"~" + window.ship}
           size={16}
           color={"#000000"}
             />
-          <span class="mono f9 ml2 v-top">{"~" + window.ship}</span>
+          <span className="mono f9 ml2 v-top">{"~" + window.ship}</span>
         </div>
       </div>
     );
