@@ -116,7 +116,8 @@ export class Links extends Component {
        </div>
        <div
          className={`pl3 pt2 flex relative overflow-x-scroll 
-         overflow-x-auto-l overflow-x-auto-xl flex-shrink-0`}
+         overflow-x-auto-l overflow-x-auto-xl flex-shrink-0
+         bb bn-m bn-l bn-xl b--gray4`}
          style={{ height: 48 }}>
           <SidebarSwitcher
            sidebarShown={props.sidebarShown}

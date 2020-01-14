@@ -78,6 +78,9 @@ a {
   .h-100-m-40-s {
     height: calc(100% - 40px);
   }
+  .black-s {
+    color: #000;
+  }
 }
 
 @media all and (min-width: 34.375em) {

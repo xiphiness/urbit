@@ -64,11 +64,11 @@ export class LinkItem extends Component {
             </p>
           </a>
           <div className="w-100 pt1">
-            <span className={"f9 pr2 " + mono}>{(props.nickname) 
+            <span className={"f9 pr2 v-mid " + mono}>{(props.nickname) 
             ? props.nickname 
             : "~" + props.ship}</span>
-          <span className="f9 inter gray2 pr2">{this.state.timeSinceLinkPost}</span>
-          <span className="f9 inter gray2">{comments}</span>
+          <span className="f9 inter gray2 pr3 v-mid">{this.state.timeSinceLinkPost}</span>
+          <span className="f9 inter gray2 v-mid">{comments}</span>
           </div>
         </div>
       </div>

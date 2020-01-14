@@ -71,9 +71,13 @@ export class ChannelsSidebar extends Component {
         relative ` + activeClasses + ((hiddenClasses)
         ? "flex-basis-100-s flex-basis-30-ns"
         : "dn")}>
-        <a className="db dn-m dn-l dn-xl f8 pb6 pl3" href="/">⟵ Landscape</a>
+        <a className="db dn-m dn-l dn-xl f8 pb3 pl3" href="/">⟵ Landscape</a>
         <div className="overflow-y-scroll h-100">
-          <h2 className="f9 pt4 pr4 pb2 pl4 gray2 c-default">Your Channels</h2>
+          <h2 className={`f9-l f9-xl f8 pt1 pt4-l pt4-xl pr4 pb3 pb2-l pb2-xl
+           pl3 pl4-l pl4-xl black-s gray2 c-default
+           bb bn-l bn-xl b--gray4 mb2 mb0-l mb0-xl`}>
+             Your Channels
+             </h2>
           {privateChannel}
           {channelItems}
         </div>
