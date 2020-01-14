@@ -48,6 +48,8 @@ export class Links extends Component {
 
     let linkPage = "page" + props.page
 
+    //TODO if "page[num]" is not in state, ask for it, send it to update reducer
+
     let links = !!props.links[linkPage]
     ? props.links[linkPage]
     : {};
@@ -102,6 +104,7 @@ export class Links extends Component {
         color={color}
         comments={comments}
         mono={mono}
+        channel={channel}
         />
       )
     })

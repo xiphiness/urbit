@@ -7,7 +7,7 @@ import { api } from '/api';
 import { subscription } from '/subscription';
 import { store } from '/store';
 import { Skeleton } from '/components/skeleton';
-import { Links } from '/components/links';
+import { Links } from '/components/links-list';
 
 
 export class Root extends Component {
@@ -29,10 +29,12 @@ export class Root extends Component {
   popout() {
     let root = document.getElementById("root");
     root.classList.add("h-100");
-    root.classList.remove("h-100-m-40-ns", "ba-l", "ba-xl");
+    root.classList.remove("h-100-m-40-ns", "ba-m", "ba-l", "ba-xl");
 
     let body = document.body;
-    body.classList.remove("ph4-l", "ph4-xl", "pb4-l", "pb4-xl");
+    body.classList.remove(
+      "ph4-m", "ph4-l", "ph4-xl", "pb4-m", "pb4-l", "pb4-xl"
+      );
   }
 
   setSpinner(spinner) {
@@ -72,7 +74,6 @@ export class Root extends Component {
           <Route exact path="/~link/(popout)?/:ship/:channel/:page?"
             render={ (props) => {
               // groups/contacts and link channels are the same thing in ver 1
-              //TODO default to no metadata if not in a group channel
 
               let groupPath = 
               `/${props.match.params.ship}/${props.match.params.channel}`;
@@ -102,6 +103,40 @@ export class Root extends Component {
                   members={groupMembers}
                   links={channelLinks}
                   page={page}
+                  path={groupPath}
+                  popout={popout}
+                  sidebarShown={state.sidebarShown}
+                  />
+                </Skeleton>
+              )
+            }}
+          />
+                    <Route exact path="/~link/(popout)?/:ship/:channel/url/:link"
+            render={ (props) => {
+
+              let groupPath = 
+              `/${props.match.params.ship}/${props.match.params.channel}`;
+              let groupMembers = paths[groupPath] || {};
+
+              let url = props.match.params.link || "";
+
+              let popout = props.match.url.includes("/popout/");
+
+              return (
+                <Skeleton
+                  spinner={state.spinner}
+                  paths={paths}
+                  active="links"
+                  selected={groupPath}
+                  sidebarShown={state.sidebarShown}
+                  sidebarHideMobile={true}
+                  popout={popout}
+                  links={links}
+                >
+                  <Link
+                  {...props}
+                  url={url}
+                  members={groupMembers}
                   path={groupPath}
                   popout={popout}
                   sidebarShown={state.sidebarShown}
