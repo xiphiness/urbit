@@ -67554,10 +67554,10 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                             rightPanelHide: true,
                             sidebarShown: true,
                             links: links, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 40}}
-                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 46}}
+                            , react.createElement('div', { className: "h-100 w-100 overflow-x-hidden flex flex-column bg-white dn db-ns"       , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 46}}
                             , react.createElement('div', { className: "pl3 pr3 pt2 dt pb3 w-100 h-100"      , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 47}}
                                   , react.createElement('p', { className: "f8 pt3 gray2 w-100 h-100 dtc v-mid tc"       , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 48}}, "Channels are shared across groups. To create a new channel, "
-                                              , react.createElement('a', { className: "gray4", href: "/~contacts", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 49}}, "create a group"  ), "."
+                                              , react.createElement('a', { className: "black", href: "/~contacts", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 49}}, "create a group"  ), "."
                                   )
                                 )
                             )
@@ -67621,18 +67621,24 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 //   :  null;
 
                 return (
-                  react.createElement('div', { className: "bg-white w-100 dn db-m db-l db-xl justify-between"      ,
-                    style: { height: 48 }, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 16}}
-                    , react.createElement('a', { className: "db",
-                      style: { background: '#FFFFFF',
-                        borderRadius: 8,
-                        width: 16,
-                        height: 16,
-                        top: 8 },
-                      href: "/", __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 18}}
-                      /* <IconHome /> */
+                  react.createElement('div', { className: "bg-white w-100 dn db-m db-l db-xl justify-between relative tc pt3"         ,
+                    style: { height: 40 }, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 17}}
+                    , react.createElement('a', { className: "dib gray2 f9 inter absolute left-0"     ,
+                      href: "/",
+                      style: {top: 14}, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 19}}, "Home"
+
                     )
+                    , react.createElement('span', { class: "f9 inter" , __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 24}}, "Links")
                     /* {spin} */
+                    , react.createElement('div', { class: "absolute right-0 lh-copy"  ,
+                    style: {top: 12}, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 26}}
+                    , react.createElement(Sigil, {
+                      ship: "~" + window.ship,
+                      size: 16,
+                      color: "#000000", __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 28}}
+                        )
+                      , react.createElement('span', { class: "mono f9 ml2 v-top"   , __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 33}}, "~" + window.ship)
+                    )
                   )
                 );
               }
