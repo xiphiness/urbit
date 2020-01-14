@@ -41,7 +41,8 @@ export class Root extends Component {
                 active="channels" 
                 paths={paths}
                 rightPanelHide={true}
-                sidebarShown={true}>
+                sidebarShown={true}
+                links={links}>
                 <div className="h-100 w-100 overflow-x-hidden flex flex-column bg-gray0 dn db-ns">
                 <div className="pl3 pr3 pt2 dt pb3 w-100 h-100">
                       <p className="f8 pt3 gray2 w-100 h-100 dtc v-mid tc">
@@ -78,6 +79,7 @@ export class Root extends Component {
                   sidebarShown={state.sidebarShown}
                   sidebarHideMobile={true}
                   popout={popout}
+                  links={links}
                 >
                   <Links
                   {...props}

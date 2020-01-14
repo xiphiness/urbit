@@ -115,7 +115,7 @@ export class Links extends Component {
          <Link to="/~link/">{"⟵ All Channels"}</Link>
        </div>
        <div
-         className={`pl3 pt2 bb b--gray4 flex relative overflow-x-scroll 
+         className={`pl3 pt2 flex relative overflow-x-scroll 
          overflow-x-auto-l overflow-x-auto-xl flex-shrink-0`}
          style={{ height: 48 }}>
           <SidebarSwitcher
@@ -124,10 +124,13 @@ export class Links extends Component {
          />
          <Link to={`/~link` + popout + props.path} className="pt2">
            <h2
-             className="dib f8 fw4 v-top">
-             {(props.path.includes("/~/"))
-             ? "Private"
-            : channel.substr(channel.indexOf("/") + 1)}
+             className={`dib f8 fw4 v-top ` + 
+             (props.path.includes("/~/")
+             ? ""
+             : "mono")}>
+              {(props.path.includes("/~/"))
+              ? "Private"
+              : channel}
            </h2>
          </Link>
           <LinksTabBar
@@ -138,7 +141,7 @@ export class Links extends Component {
         <div className="w-100 mt6 flex justify-center pa4">
           <div className="w-100 mw7">
             <div className="flex">
-              <div className="relative ba b--gray4 w-100 mb6">
+              <div className="relative ba b--gray4 br1 w-100 mb6">
               <textarea
               className="pl2 w-100 f8"
               style={{
