@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import { uuid } from '/lib/util';
 import { store } from '/store';
+import moment from 'moment';
 
 
 class UrbitApi {
@@ -90,14 +91,28 @@ class UrbitApi {
     });
   }
 
+  async getComments(path, url, page, index) {
+    let endpoint = "/~link/discussions" + path + "/" + window.btoa(url) + ".json";
+    let promise = await fetch(endpoint);
+    if (promise.ok) {
+      let comments = {};
+      comments["link-update"] = {};
+      comments["link-update"].comments = {};
+      comments["link-update"].comments.path = path;
+      comments["link-update"].comments.page = page;
+      comments["link-update"].comments.index = index;
+      comments["link-update"].comments.data = await promise.json();
+      store.handleEvent(comments);
+    }
+  }
+
   async postLink(path, url, title) {
     let json = 
-    {'title': title,
+    { 'path': path,
+    'title': title,
     'url': url
   };
-    console.log(json);
-    console.log(JSON.stringify(json));
-    let endpoint = "/~link/add" + path;
+    let endpoint = "/~link/save";
     let post = await fetch(endpoint, {
       method: "POST",
       credentials: 'include',
@@ -107,7 +122,60 @@ class UrbitApi {
       body: JSON.stringify(json)
     });
 
-    let jsonResponse = await post.text();
+    if (post.ok) {
+      let update = {};
+      update["link-update"] = {};
+      update["link-update"][path] = {};
+      update["link-update"][path].add = {};
+      update["link-update"][path].add = {
+        "title": title, 
+        "url": url, 
+        "timestamp": moment.now(), 
+        "ship": window.ship,
+        "commentCount": 0
+      }
+      store.handleEvent(update);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async postComment(path, url, comment, page, index) {
+    console.log('got the postComment')
+    let json = {
+      'path': path,
+      'url': url,
+      'udon': comment
+    }
+
+    let endpoint = "/~link/note";
+    let post = await fetch(endpoint, {
+      method: "POST",
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(json)
+    });
+
+    if (post.ok) {
+      let update = {};
+      update["link-update"] = {};
+      update["link-update"].commentAdd = {};
+      update["link-update"].commentAdd = {
+        "path": path,
+        "url": url,
+        "udon": comment,
+        "page": page,
+        "index": index,
+        "time": moment.now()
+      }
+      store.handleEvent(update);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   sidebarToggle() {

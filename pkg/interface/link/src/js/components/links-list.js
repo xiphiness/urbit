@@ -24,7 +24,11 @@ export class Links extends Component {
     let title = (this.state.linkTitle)
     ? this.state.linkTitle
     : this.state.linkValue;
-    api.postLink(this.props.path, link, title);
+    let request = api.postLink(this.props.path, link, title);
+
+    if (request) {
+      this.setState({linkValue: "", linkTitle: ""})
+    }
   }
 
   setLinkValue(event) {
@@ -66,9 +70,6 @@ export class Links extends Component {
       let comments = linksObj[link].commentCount;
 
       let mono = true;
-
-
-      //TODO remove this whole shim, it's dev
       let members = {};
 
       if (!props.members[ship]) {
@@ -90,13 +91,12 @@ export class Links extends Component {
         color = uxToHex(members[ship].color);
       }
 
-      //end of shim
-
-
       return(
         <LinkItem
         key={timestamp}
         title={title}
+        page={props.page}
+        index={link}
         url={url}
         timestamp={timestamp}
         nickname={nickname}
@@ -105,6 +105,7 @@ export class Links extends Component {
         comments={comments}
         mono={mono}
         channel={channel}
+        popout={popout}
         />
       )
     })
@@ -142,7 +143,7 @@ export class Links extends Component {
           popout={popout}
           path={props.path}/>
         </div>
-        <div className="w-100 mt6 flex justify-center pa4">
+        <div className="w-100 mt6 flex justify-center overflow-y-scroll pa4">
           <div className="w-100 mw7">
             <div className="flex">
               <div className="relative ba b--gray4 br1 w-100 mb6">
@@ -161,7 +162,9 @@ export class Links extends Component {
                 if (e.key === "Enter") {
                   this.onClickPost();
                 }
-              }}/>
+              }}
+              value={this.state.linkValue}
+              />
 
               <textarea
               className="pl2 w-100 f8"
@@ -178,7 +181,8 @@ export class Links extends Component {
                 if (e.key === "Enter") {
                   this.onClickPost();
                 }
-              }}/>
+              }}
+              value={this.state.linkTitle}/>
 
               <button
                 className={"absolute f8 ml2 flex-shrink-0 " + activeClasses}

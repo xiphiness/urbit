@@ -17,6 +17,10 @@ export class HeaderBar extends Component {
     ? "dn"
     : "dn db-m db-l db-xl";
 
+    let title = (document.title === "Home")
+    ? ""
+    : document.title;
+
     return (
       <div className={"bg-white w-100 justify-between relative tc pt3 "
         + popout}
@@ -25,11 +29,16 @@ export class HeaderBar extends Component {
           href='/'
           style={{top: 14}}>
           <IconHome/>
-          <span className="ml2 pt1 v-top lh-title">
+          <span className="ml2 v-top lh-title"
+          style={{paddingTop: 3}}>
           Home
           </span>
         </a>
-        <span className="f9 inter">Links</span>
+        <span className="f9 inter dib"
+        style={{
+          verticalAlign: "text-top",
+          paddingTop: 3
+        }}>{title}</span>
         {/* {spin} */}
         <div className="absolute right-0 lh-copy"
         style={{top: 12}}>

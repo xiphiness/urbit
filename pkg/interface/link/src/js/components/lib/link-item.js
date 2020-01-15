@@ -4,8 +4,6 @@ import moment from 'moment';
 import { Sigil } from '/components/lib/icons/sigil';
 import { Route, Link } from 'react-router-dom';
 
-
-
 export class LinkItem extends Component {
   constructor(props) {
     super(props);
@@ -49,8 +47,6 @@ export class LinkItem extends Component {
 
     let comments = props.comments + " comment" + ((props.comments === 1) ? "" : "s");
     
-    let b64URL = window.btoa(props.url);
-
     return (
       <div className="w-100 pv3 flex">
         <Sigil
@@ -71,7 +67,9 @@ export class LinkItem extends Component {
             ? props.nickname 
             : "~" + props.ship}</span>
           <span className="f9 inter gray2 pr3 v-mid">{this.state.timeSinceLinkPost}</span>
-          <Link to={"/~link/" + props.channel + "/url/" + b64URL} className="v-top">
+          <Link to=
+          {"/~link" + props.popout + "/" + props.channel + "/" + props.page + "/" + props.index}
+          className="v-top">
             <span className="f9 inter gray2">
                 {comments}
               </span>

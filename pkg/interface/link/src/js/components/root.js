@@ -8,6 +8,7 @@ import { subscription } from '/subscription';
 import { store } from '/store';
 import { Skeleton } from '/components/skeleton';
 import { Links } from '/components/links-list';
+import { LinkDetail } from '/components/link';
 
 
 export class Root extends Component {
@@ -111,16 +112,21 @@ export class Root extends Component {
               )
             }}
           />
-                    <Route exact path="/~link/(popout)?/:ship/:channel/url/:link"
+          <Route exact path="/~link/(popout)?/:ship/:channel/:page/:index"
             render={ (props) => {
-
               let groupPath = 
               `/${props.match.params.ship}/${props.match.params.channel}`;
-              let groupMembers = paths[groupPath] || {};
-
-              let url = props.match.params.link || "";
 
               let popout = props.match.url.includes("/popout/");
+
+              let groupMembers = paths[groupPath] || {};
+
+              let index = props.match.params.index || 0;
+              let page = props.match.params.page || 0;
+
+              let data = !!links[groupPath]
+              ? links[groupPath]["page" + page][index] 
+              : {};
 
               return (
                 <Skeleton
@@ -133,13 +139,15 @@ export class Root extends Component {
                   popout={popout}
                   links={links}
                 >
-                  <Link
+                  <LinkDetail
                   {...props}
-                  url={url}
+                  page={page}
+                  link={index}
                   members={groupMembers}
                   path={groupPath}
                   popout={popout}
                   sidebarShown={state.sidebarShown}
+                  data={data}
                   />
                 </Skeleton>
               )
