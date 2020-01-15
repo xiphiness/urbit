@@ -51,9 +51,9 @@
       =^  cards  state
         (take-groups-sign:do sign)
       [cards this]
-    ?:  ?=([%links @ ^] wire)
+    ?:  ?=([%links ?(%local-pages %annotations) @ ^] wire)
       =^  cards  state
-        (take-links-sign:do (slav %p i.t.wire) t.t.wire sign)
+        (take-link-sign:do (slav %p i.t.t.wire) t.t.t.wire sign)
       [cards this]
     ?:  ?=([%forward ^] wire)
       =^  cards  state
@@ -139,43 +139,62 @@
     ::
     ?:  =(our.bowl i.whos)
       $(whos t.whos)
-    :_  $(whos t.whos)
+    %+  weld  $(whos t.whos)
     %.  [i.whos pax.upd]
     ?:  ?=(%remove -.upd)
-      end-link-subscription
-    start-link-subscription
+      end-link-subscriptions
+    start-link-subscriptions
   ==
 ::
 ::  link subscriptions
 ::
-++  start-link-subscription
-  |=  [who=ship where=path]
+++  start-subscription
+  |=  [who=ship =wire =path]
   ^-  card
   :*  %pass
-      [%links (scot %p who) where]
+      wire
       %agent
       [who %link-proxy-hook]
       %watch
-      [%local-pages where]
+      path
   ==
 ::
-++  end-link-subscription
-  |=  [who=ship where=path]
+++  end-subscription
+  |=  [who=ship =wire]
   ^-  card
   :*  %pass
-      [%links (scot %p who) where]
+      wire
       %agent
       [who %link-proxy-hook]
       %leave
       ~
   ==
 ::
-++  take-links-sign
+++  start-link-subscriptions
+  |=  [who=ship where=path]
+  ^-  (list card)
+  :~  %^  start-subscription  who
+        [%links %local-pages (scot %p who) where]
+      [%local-pages where]
+    ::
+      %^  start-subscription  who
+        [%links %annotations (scot %p who) where]
+      [%annotations '' where]
+  ==
+::
+++  end-link-subscriptions
+  |=  [who=ship where=path]
+  ^-  (list card)
+  :~  (end-subscription who [%links %local-pages (scot %p who) where])
+      (end-subscription who [%links %annotations (scot %p who) where])
+  ==
+::
+++  take-link-sign
   |=  [who=ship where=path =sign:agent:gall]
   ^-  (quip card _state)
   ?-  -.sign
     %poke-ack   ~|([dap.bowl %unexpected-poke-ack /links who where] !!)
-    %kick       [[(start-link-subscription who where)]~ state]
+    %kick       [(start-link-subscriptions who where) state]  ::TODO  either
   ::
       %watch-ack
     ?~  p.sign  [~ state]
@@ -191,26 +210,65 @@
     =*  mark  p.cage.sign
     =*  vase  q.cage.sign
     ?+  mark  ~|([dap.bowl %unexpected-mark mark] !!)
+      %link-initial  (handle-link-initial who where !<(initial vase))
       %link-update  (handle-link-update who where !<(update vase))
     ==
+  ==
+::
+++  do-link-action
+  |=  [=wire =action]
+  ^-  card
+  :*  %pass
+      wire
+      %agent
+      [our.bowl %link-store]
+      %poke
+      %link-action
+      !>(action)
+  ==
+::
+++  handle-link-initial
+  |=  [who=ship where=path =initial]
+  ^-  (quip card _state)
+  ?>  =(src.bowl who)
+  ?+  -.initial  ~|([dap.bowl %unexpected-initial -.initial] !!)
+      %local-pages
+    =/  =pages  (~(got by pages.initial) where)
+    (handle-link-update who where [%local-pages where pages])
+  ::
+      %annotations
+    =/  urls=(list [=url =notes])
+      ~(tap by (~(got by notes.initial) where))
+    =|  cards=(list card)
+    |-  ^-  (quip card _state)
+    ?~  urls  [cards state]
+    =^  caz  state
+      ^-  (quip card _state)
+      =,  i.urls
+      (handle-link-update who where [%annotations where url notes])
+    $(urls t.urls, cards (weld cards caz))
   ==
 ::
 ++  handle-link-update
   |=  [who=ship where=path =update]
   ^-  (quip card _state)
-  ?>  ?=(%local-pages -.update)
   ?>  =(src.bowl who)
   :_  state
-  %+  turn  pages.update
-  |=  =page
-  ^-  card
-  :*  %pass
-      [%forward (scot %p who) where]
-      %agent
-      [our.bowl %link-store]
-      %poke
-      %link-action
-      !>([%hear where src.bowl page])
+  ?+  -.update  ~|([dap.bowl %unexpected-update -.update] !!)
+      %local-pages
+    %+  turn  pages.update
+    |=  =page
+    %+  do-link-action
+      [%forward %local-page (scot %p who) where]
+    [%hear where who page]
+  ::
+      %annotations
+    %+  turn  notes.update
+    |=  =note
+    ^-  card
+    %+  do-link-action
+      [%forward %annotation (scot %p who) where]
+    [%read where url.update who note]
   ==
 ::
 ++  take-forward-sign
