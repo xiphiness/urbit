@@ -79,7 +79,7 @@ export class ChannelsSidebar extends Component {
            pl3 pl4-m pl4-l pl4-xl 
            black-s gray2 c-default
            bb bn-m bn-l bn-xl b--gray4 mb2 mb0-m mb0-l mb0-xl`}>
-             Your Channels
+             Your Collections
              </h2>
           {privateChannel}
           {channelItems}

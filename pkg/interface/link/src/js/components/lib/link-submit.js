@@ -7,7 +7,8 @@ export class LinkSubmit extends Component {
     super();
     this.state = {
       linkValue: "",
-      linkTitle: ""
+      linkTitle: "",
+      linkValid: false
     }
     this.setLinkValue = this.setLinkValue.bind(this);
     this.setLinkTitle = this.setLinkTitle.bind(this);
@@ -25,8 +26,27 @@ export class LinkSubmit extends Component {
     }
   }
 
+  setLinkValid(link) {
+    let URLparser = new RegExp(/((?:([\w\d\.-]+)\:\/\/?){1}(?:(www)\.?){0,1}(((?:[\w\d-]+\.)*)([\w\d-]+\.[\w\d]+))){1}(?:\:(\d+)){0,1}((\/(?:(?:[^\/\s\?]+\/)*))(?:([^\?\/\s#]+?(?:.[^\?\s]+){0,1}){0,1}(?:\?([^\s#]+)){0,1})){0,1}(?:#([^#\s]+)){0,1}/);
+
+    let validURL = URLparser.exec(link);
+
+    if (!validURL) {
+      let checkProtocol = URLparser.exec("http://" + link);
+      if (checkProtocol) {
+        this.setState({linkValid: true});
+        this.setState({linkValue: "http://" + link});
+      } else {
+        this.setState({linkValid: false})
+      }
+    } else if (validURL) {
+      this.setState({linkValid: true});
+    }
+  }
+
   setLinkValue(event) {
     this.setState({linkValue: event.target.value});
+    this.setLinkValid(event.target.value);
   }
 
   setLinkTitle(event) {
@@ -35,7 +55,7 @@ export class LinkSubmit extends Component {
 
   render() {
 
-    let activeClasses = (this.state.linkValue)
+    let activeClasses = (this.state.linkValid)
     ? "green2 pointer"
     : "gray2";
     
@@ -81,7 +101,7 @@ export class LinkSubmit extends Component {
         />
         <button
           className={"absolute f8 ml2 flex-shrink-0 " + activeClasses}
-          disabled={!this.state.linkValue}
+          disabled={!this.state.linkValid}
           onClick={this.onClickPost.bind(this)}
           style={{
             bottom: 12,

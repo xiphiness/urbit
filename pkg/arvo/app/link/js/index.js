@@ -63406,7 +63406,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
            pr4 pb3 pb2-m pb2-l pb2-xl
            pl3 pl4-m pl4-l pl4-xl 
            black-s gray2 c-default
-           bb bn-m bn-l bn-xl b--gray4 mb2 mb0-m mb0-l mb0-xl`, __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 76}}, "Your Channels"
+           bb bn-m bn-l bn-xl b--gray4 mb2 mb0-m mb0-l mb0-xl`, __self: this, __source: {fileName: _jsxFileName$1, lineNumber: 76}}, "Your Collections"
 
                          )
                       , privateChannel
@@ -67505,7 +67505,8 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 super();
                 this.state = {
                   linkValue: "",
-                  linkTitle: ""
+                  linkTitle: "",
+                  linkValid: false
                 };
                 this.setLinkValue = this.setLinkValue.bind(this);
                 this.setLinkTitle = this.setLinkTitle.bind(this);
@@ -67523,8 +67524,27 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 }
               }
 
+              setLinkValid(link) {
+                let URLparser = new RegExp(/((?:([\w\d\.-]+)\:\/\/?){1}(?:(www)\.?){0,1}(((?:[\w\d-]+\.)*)([\w\d-]+\.[\w\d]+))){1}(?:\:(\d+)){0,1}((\/(?:(?:[^\/\s\?]+\/)*))(?:([^\?\/\s#]+?(?:.[^\?\s]+){0,1}){0,1}(?:\?([^\s#]+)){0,1})){0,1}(?:#([^#\s]+)){0,1}/);
+
+                let validURL = URLparser.exec(link);
+
+                if (!validURL) {
+                  let checkProtocol = URLparser.exec("http://" + link);
+                  if (checkProtocol) {
+                    this.setState({linkValid: true});
+                    this.setState({linkValue: "http://" + link});
+                  } else {
+                    this.setState({linkValid: false});
+                  }
+                } else if (validURL) {
+                  this.setState({linkValid: true});
+                }
+              }
+
               setLinkValue(event) {
                 this.setState({linkValue: event.target.value});
+                this.setLinkValid(event.target.value);
               }
 
               setLinkTitle(event) {
@@ -67533,12 +67553,12 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
 
               render() {
 
-                let activeClasses = (this.state.linkValue)
+                let activeClasses = (this.state.linkValid)
                 ? "green2 pointer"
                 : "gray2";
                 
                 return (
-                  react.createElement('div', { className: "relative ba b--gray4 br1 w-100 mb6"     , __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 43}}
+                  react.createElement('div', { className: "relative ba b--gray4 br1 w-100 mb6"     , __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 63}}
                     , react.createElement('textarea', {
                     className: "pl2 w-100 f8"  ,
                     style: {
@@ -67556,7 +67576,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                         this.onClickPost();
                       }
                     },
-                    value: this.state.linkValue, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 44}}
+                    value: this.state.linkValue, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 64}}
                     )
                     , react.createElement('textarea', {
                     className: "pl2 w-100 f8"  ,
@@ -67575,16 +67595,16 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                         this.onClickPost();
                       }
                     },
-                    value: this.state.linkTitle, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 63}}
+                    value: this.state.linkTitle, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 83}}
                     )
                     , react.createElement('button', {
                       className: "absolute f8 ml2 flex-shrink-0 " + activeClasses,
-                      disabled: !this.state.linkValue,
+                      disabled: !this.state.linkValid,
                       onClick: this.onClickPost.bind(this),
                       style: {
                         bottom: 12,
                         right: 8
-                      }, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 82}}, "Post"
+                      }, __self: this, __source: {fileName: _jsxFileName$7, lineNumber: 102}}, "Post"
 
                     )
                   )
@@ -67915,75 +67935,81 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 
                 return (
                   react.createElement('div', { className: "h-100 w-100 overflow-hidden flex flex-column"    , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 125}}
-                    , react.createElement('div', {
-                        className: `pl3 pt2 flex relative overflow-x-scroll 
-            overflow-x-auto-l overflow-x-auto-xl flex-shrink-0
-            bb bn-m bn-l bn-xl b--gray4`,
-                        style: { height: 48 }, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 126}}
-                          , react.createElement(SidebarSwitcher, {
-                          sidebarShown: props.sidebarShown,
-                          popout: props.popout, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 131}})
-                          , react.createElement(Link$1, { 
-                          className: "dib f8 fw4 v-top pt2 gray2"     ,
-                          to: "/~link" + props.path + "/" + props.page, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 134}}
-                            , "<- Collection index"
-                          )
-                          , react.createElement(LinksTabBar, {
-                          ...props,
-                          popout: popout,
-                          path: path, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 139}})
+                  , react.createElement('div', {
+                  className: `pl3 pt2 flex relative overflow-x-scroll 
+      overflow-x-auto-l overflow-x-auto-xl flex-shrink-0
+      bb bn-m bn-l bn-xl b--gray4`,
+                  style: { height: 48 }, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 126}}
+                    , react.createElement(SidebarSwitcher, {
+                    sidebarShown: props.sidebarShown,
+                    popout: props.popout, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 131}})
+                    , react.createElement(Link$1, { 
+                    className: "dib f8 fw4 v-top pt2 gray2"     ,
+                    to: "/~link" + props.path + "/" + props.page, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 134}}
+                    , "<- Collection index"
+                    )
+                    , react.createElement(LinksTabBar, {
+                    ...props,
+                    popout: popout,
+                    path: path, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 139}})
+                  )
+                  , react.createElement('div', { className: "w-100 mt6 flex justify-center overflow-y-scroll pa4"     , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 144}}
+                    , react.createElement('div', { className: "w-100 mw7" , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 145}}
+                      , react.createElement('div', { className: "pt6 pb6 flex"  , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 146}}
+                        , react.createElement(Sigil, {
+                        ship: "~" + ship,
+                        size: 36,
+                        color: "#" + color, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 147}}
                         )
-                        , react.createElement('div', { className: "w-100 mt6 flex justify-center overflow-y-scroll pa4"     , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 144}}
-                      , react.createElement('div', { className: "w-100 mw7" , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 145}}
-                        , react.createElement('div', { className: "pt6 pb6 flex"  , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 146}}
-                          , react.createElement(Sigil, {
-                          ship: "~" + ship,
-                          size: 36,
-                          color: "#" + color, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 147}}
+                        , react.createElement('div', { className: "flex flex-column ml2"  , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 152}}
+                          , react.createElement('a', { href: url,
+                          className: "w-100 flex" ,
+                          target: "_blank", __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 153}}
+                          , react.createElement('p', { className: "f8 truncate" , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 156}}, title
+                          , react.createElement('span', { className: "gray2 ml2 flex-shrink-0"  , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 157}}, hostname, " ↗" )
                           )
-                          , react.createElement('div', { className: "flex flex-column ml2"  , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 152}}
-                            , react.createElement('a', { href: url,
-                            className: "w-100 flex" ,
-                            target: "_blank", __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 153}}
-                              , react.createElement('p', { className: "f8 truncate" , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 156}}, title
-                                , react.createElement('span', { className: "gray2 ml2 flex-shrink-0"  , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 157}}, hostname, " ↗" )
-                              )
-                            )
-                            , react.createElement('div', { className: "w-100 pt1" , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 160}}
-                              , react.createElement('span', { className: "f9 pr2 v-mid " + nameClass, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 161}}, (nickname) 
+                          )
+                          , react.createElement('div', { className: "w-100 pt1" , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 160}}
+                            , react.createElement('span', { className: "f9 pr2 v-mid " + nameClass, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 161}}, (nickname) 
                               ? nickname 
                               : "~" + ship
                               )
-                            , react.createElement('span', { className: "f9 inter gray2 pr3 v-mid"    , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 165}}
+                              , react.createElement('span', { className: "f9 inter gray2 pr3 v-mid"    , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 165}}
                               , this.state.timeSinceLinkPost
                               )
-                            , react.createElement(Link$1, { to: "/~link" + props.path + "/" + props.page + "/" + props.link, className: "v-top", __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 168}}
+                              , react.createElement(Link$1, { to: "/~link" + props.path + "/" + props.page + "/" + props.link, className: "v-top", __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 168}}
                               , react.createElement('span', { className: "f9 inter gray2"  , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 169}}
-                                  , comments
-                                )
+                              , comments
+                              )
+                              )
                               )
                             )
                           )
-                        )
-                      , react.createElement('textarea', {
-                      className: "w-100 f8 ba b--gray4 pa3 mt6 mb3"      ,
-                      style: {
-                        resize: "none",
-                        height: 100
-                      },
-                      placeholder: "Enter a comment"  ,
-                      onChange: this.setComment,
-                      value: this.state.comment, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 176}}
-                      )
-                      , react.createElement('button', { className: "f8 ba pa2 " + activeClasses,
-                      disabled: !this.state.comment,
-                      onClick: this.onClickPost.bind(this), __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 186}}, "Post"
+                        , react.createElement('div', { className: "relative ba br1 b--gray4 mt6 mb6"     , __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 176}}
+                          , react.createElement('textarea', {
+                          className: "w-100 f8 pa2 pr8"   ,
+                          style: {
+                            resize: "none",
+                            height: 75
+                          },
+                          placeholder: "Leave a comment on this link"     ,
+                          onChange: this.setComment,
+                          value: this.state.comment, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 177}}
+                          )
+                          , react.createElement('button', { className: "f8 ml2 absolute " + activeClasses,
+                          disabled: !this.state.comment,
+                          onClick: this.onClickPost.bind(this),
+                          style: {
+                            bottom: 12,
+                            right: 8
+                          }, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 187}}, "Post"
 
-                      )
-                      , react.createElement(Comments, { comments: props.data.comments, members: props.members, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 191}})
+                          )
+                          )
+                        , react.createElement(Comments, { comments: props.data.comments, members: props.members, __self: this, __source: {fileName: _jsxFileName$b, lineNumber: 197}})
+                        )
                       )
                     )
-                  )
                   )
                 }
               }
