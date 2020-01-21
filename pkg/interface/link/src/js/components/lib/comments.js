@@ -15,9 +15,7 @@ export class Comments extends Component {
     .map((entry) => {
 
       let commentObj = comments[entry]
-      let ship = commentObj.ship;
-      let time = commentObj.time;
-      let content = commentObj.udon;
+      let { ship, time, udon } = commentObj;
 
       let members = !!props.members 
       ? props.members
@@ -38,7 +36,7 @@ export class Comments extends Component {
           key={time}
           ship={ship}
           time={time}
-          content={content}
+          content={udon}
           nickname={nickname}
           nameClass={nameClass}
           color={color}

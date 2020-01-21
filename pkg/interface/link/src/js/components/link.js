@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { LinksTabBar } from './lib/links-tabbar';
+import { SidebarSwitcher } from '/components/lib/icons/icon-sidebar-switch.js';
 import { api } from '../api';
 import { Route, Link } from 'react-router-dom';
 import { Sigil } from '/components/lib/icons/sigil';
@@ -86,6 +88,8 @@ export class LinkDetail extends Component {
   
   render() {
     let props = this.props;
+    let popout = (props.popout) ? "/popout" : "";
+    let path = props.path + "/" + props.page + "/" + props.link;
 
     let ship = props.data.ship || "zod";
     let title = props.data.title || "";
@@ -119,15 +123,26 @@ export class LinkDetail extends Component {
     
     return (
       <div className="h-100 w-100 overflow-hidden flex flex-column">
-        <div className="w-100 mt1 flex justify-center overflow-y-scroll pa4">
-          <div className="w-100 mw7">
-            <div
-            className="w-100 inter pt4 pt0-m pt0-l pt0-xl pb6 pl3 pl0-m pl0-l pl0-xl f8"
-            style={{ height: "1rem" }}>
-              <Link to={"/~link" + props.path + "/" + props.page}>
-                {"⟵ Back to Channel"}
+        <div
+            className={`pl3 pt2 flex relative overflow-x-scroll 
+            overflow-x-auto-l overflow-x-auto-xl flex-shrink-0
+            bb bn-m bn-l bn-xl b--gray4`}
+            style={{ height: 48 }}>
+              <SidebarSwitcher
+              sidebarShown={props.sidebarShown}
+              popout={props.popout}/>
+              <Link 
+              className="dib f8 fw4 v-top pt2 gray2"
+              to={"/~link" + props.path + "/" + props.page}>
+                {"<- Collection index"}
               </Link>
+              <LinksTabBar
+              {...props}
+              popout={popout}
+              path={path}/>
             </div>
+            <div className="w-100 mt6 flex justify-center overflow-y-scroll pa4">
+          <div className="w-100 mw7">
             <div className="pt6 pb6 flex">
               <Sigil
               ship={"~" + ship}
