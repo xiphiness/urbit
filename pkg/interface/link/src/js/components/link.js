@@ -18,6 +18,8 @@ export class LinkDetail extends Component {
   }
   
   componentDidMount() {
+    // if we have preloaded our data,
+    // but no comments, grab the comments
     if (!!this.props.data.url) {
       let props = this.props;
       let comments = !!props.data.comments;
@@ -33,6 +35,8 @@ export class LinkDetail extends Component {
   }
   
   componentDidUpdate(prevProps) {
+    // if we came to this page *directly*,
+    // load the comments -- DidMount will fail
     if (this.props.data.url !== prevProps.data.url) {
       let props = this.props;
       let comments = !!this.props.data.comments;
@@ -61,10 +65,15 @@ export class LinkDetail extends Component {
   }
 
   onClickPost() {
-    console.log('got the click')
     let url = this.props.data.url || "";
 
-    let request = api.postComment(this.props.path, url, this.state.comment, this.props.page, this.props.link);
+    let request = api.postComment(
+      this.props.path, 
+      url, 
+      this.state.comment, 
+      this.props.page, 
+      this.props.link
+      );
 
     if (request) {
       this.setState({comment: ""})
@@ -136,8 +145,11 @@ export class LinkDetail extends Component {
                 <div className="w-100 pt1">
                   <span className={"f9 pr2 v-mid " + nameClass}>{(nickname) 
                   ? nickname 
-                  : "~" + ship}</span>
-                <span className="f9 inter gray2 pr3 v-mid">{this.state.timeSinceLinkPost}</span>
+                  : "~" + ship}
+                  </span>
+                <span className="f9 inter gray2 pr3 v-mid">
+                  {this.state.timeSinceLinkPost}
+                  </span>
                 <Link to={"/~link" + props.path + "/" + props.page + "/" + props.link} className="v-top">
                   <span className="f9 inter gray2">
                       {comments}

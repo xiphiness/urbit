@@ -3,41 +3,13 @@ import { LinksTabBar } from './lib/links-tabbar';
 import { SidebarSwitcher } from '/components/lib/icons/icon-sidebar-switch.js';
 import { Route, Link } from "react-router-dom";
 import { LinkItem } from '/components/lib/link-item.js';
-import { api } from '../api';
+import { LinkSubmit } from '/components/lib/link-submit.js';
 
+//TODO look at uxToHex wonky functionality
 import { uxToHex } from '../lib/util';
 
 
 export class Links extends Component {
-  constructor() {
-    super();
-    this.state = {
-      linkValue: "",
-      linkTitle: ""
-    }
-    this.setLinkValue = this.setLinkValue.bind(this);
-    this.setLinkTitle = this.setLinkTitle.bind(this);
-  }
-
-   onClickPost() {
-    let link = this.state.linkValue;
-    let title = (this.state.linkTitle)
-    ? this.state.linkTitle
-    : this.state.linkValue;
-    let request = api.postLink(this.props.path, link, title);
-
-    if (request) {
-      this.setState({linkValue: "", linkTitle: ""})
-    }
-  }
-
-  setLinkValue(event) {
-    this.setState({linkValue: event.target.value});
-  }
-
-  setLinkTitle(event) {
-    this.setState({linkTitle: event.target.value});
-  }
 
   render() {
     let props = this.props;
@@ -45,10 +17,6 @@ export class Links extends Component {
     let popout = (props.popout) ? "/popout" : "";
 
     let channel = props.path.substr(1);
-
-    let activeClasses = (this.state.linkValue)
-    ? "green2 pointer"
-    : "gray2";
 
     let linkPage = "page" + props.page
 
@@ -69,7 +37,6 @@ export class Links extends Component {
       let ship = linksObj[link].ship;
       let comments = linksObj[link].commentCount;
 
-      let mono = true;
       let members = {};
 
       if (!props.members[ship]) {
@@ -84,14 +51,13 @@ export class Links extends Component {
       // restore this to props.members
       if (members[ship].nickname) {
         nickname = members[ship].nickname;
-        mono = false;
       }
 
       if (members[ship].color !== "") {
         color = uxToHex(members[ship].color);
       }
 
-      return(
+      return (
         <LinkItem
         key={timestamp}
         title={title}
@@ -103,7 +69,6 @@ export class Links extends Component {
         ship={ship}
         color={color}
         comments={comments}
-        mono={mono}
         channel={channel}
         popout={popout}
         />
@@ -125,8 +90,7 @@ export class Links extends Component {
          style={{ height: 48 }}>
           <SidebarSwitcher
            sidebarShown={props.sidebarShown}
-           popout={props.popout}
-         />
+           popout={props.popout}/>
          <Link to={`/~link` + popout + props.path} className="pt2">
            <h2
              className={`dib f8 fw4 v-top ` + 
@@ -146,57 +110,9 @@ export class Links extends Component {
         <div className="w-100 mt6 flex justify-center overflow-y-scroll pa4">
           <div className="w-100 mw7">
             <div className="flex">
-              <div className="relative ba b--gray4 br1 w-100 mb6">
-              <textarea
-              className="pl2 w-100 f8"
-              style={{
-                resize: "none",
-                height: 40,
-                paddingTop: 10
-              }}
-              placeholder="Paste link here"
-              onChange={this.setLinkValue}
-              spellCheck="false"
-              rows={1}
-              onKeyPress={e => {
-                if (e.key === "Enter") {
-                  this.onClickPost();
-                }
-              }}
-              value={this.state.linkValue}
-              />
-
-              <textarea
-              className="pl2 w-100 f8"
-              style={{
-                resize: "none",
-                height: 40,
-                paddingTop: 16
-              }}
-              placeholder="Enter title"
-              onChange={this.setLinkTitle}
-              spellCheck="false"
-              rows={1}
-              onKeyPress={e => {
-                if (e.key === "Enter") {
-                  this.onClickPost();
-                }
-              }}
-              value={this.state.linkTitle}/>
-
-              <button
-                className={"absolute f8 ml2 flex-shrink-0 " + activeClasses}
-                disabled={!this.state.linkValue}
-                onClick={this.onClickPost.bind(this)}
-                style={{
-                  bottom: 12,
-                  right: 8
-                }}>
-                  Post
-              </button>
-              </div>
+              <LinkSubmit/>
             </div>
-            <div>
+            <div className="pb4">
             {LinkList}
             {/*TODO Pagination */}
             </div>

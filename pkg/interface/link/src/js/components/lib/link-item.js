@@ -35,7 +35,7 @@ export class LinkItem extends Component {
 
     let props = this.props;
 
-    let mono = (props.mono) ? "mono" : "inter";
+    let mono = (props.nickname) ? "inter" : "mono";
 
     let URLparser = new RegExp(/((?:([\w\d\.-]+)\:\/\/?){1}(?:(www)\.?){0,1}(((?:[\w\d-]+\.)*)([\w\d-]+\.[\w\d]+))){1}(?:\:(\d+)){0,1}((\/(?:(?:[^\/\s\?]+\/)*))(?:([^\?\/\s#]+?(?:.[^\?\s]+){0,1}){0,1}(?:\?([^\s#]+)){0,1})){0,1}(?:#([^#\s]+)){0,1}/);
 
