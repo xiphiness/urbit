@@ -54,6 +54,7 @@ export class LinkSubmit extends Component {
         rows={1}
         onKeyPress={e => {
           if (e.key === "Enter") {
+            e.preventDefault();
             this.onClickPost();
           }
         }}
@@ -72,6 +73,7 @@ export class LinkSubmit extends Component {
         rows={1}
         onKeyPress={e => {
           if (e.key === "Enter") {
+            e.preventDefault();
             this.onClickPost();
           }
         }}

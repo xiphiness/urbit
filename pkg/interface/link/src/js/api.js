@@ -125,9 +125,9 @@ class UrbitApi {
     if (post.ok) {
       let update = {};
       update["link-update"] = {};
-      update["link-update"][path] = {};
-      update["link-update"][path].add = {};
-      update["link-update"][path].add = {
+      update["link-update"].add = {};
+      update["link-update"].add[path] = {};
+      update["link-update"].add[path] = {
         "title": title, 
         "url": url, 
         "timestamp": moment.now(), 

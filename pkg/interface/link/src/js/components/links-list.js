@@ -10,14 +10,10 @@ import { uxToHex } from '../lib/util';
 
 
 export class Links extends Component {
-
   render() {
     let props = this.props;
-
     let popout = (props.popout) ? "/popout" : "";
-
     let channel = props.path.substr(1);
-
     let linkPage = "page" + props.page
 
     //TODO if "page[num]" is not in state, ask for it, send it to update reducer
@@ -28,15 +24,8 @@ export class Links extends Component {
 
     let LinkList = Object.keys(links)
     .map((link) => {
-
       let linksObj = props.links[linkPage];
-
-      let title = linksObj[link].title;
-      let url = linksObj[link].url;
-      let timestamp = linksObj[link].timestamp;
-      let ship = linksObj[link].ship;
-      let comments = linksObj[link].commentCount;
-
+      let { title, url, timestamp, ship, commentCount } = linksObj[link];
       let members = {};
 
       if (!props.members[ship]) {
@@ -44,8 +33,8 @@ export class Links extends Component {
       } else {
         members = props.members;
       }
-      let color = uxToHex('0x0');
 
+      let color = uxToHex('0x0');
       let nickname = "";
 
       // restore this to props.members
@@ -68,7 +57,7 @@ export class Links extends Component {
         nickname={nickname}
         ship={ship}
         color={color}
-        comments={comments}
+        comments={commentCount}
         channel={channel}
         popout={popout}
         />
@@ -110,7 +99,7 @@ export class Links extends Component {
         <div className="w-100 mt6 flex justify-center overflow-y-scroll pa4">
           <div className="w-100 mw7">
             <div className="flex">
-              <LinkSubmit/>
+              <LinkSubmit path={props.path}/>
             </div>
             <div className="pb4">
             {LinkList}
@@ -123,4 +112,4 @@ export class Links extends Component {
   }
 }
 
-export default Links
+export default Links;
