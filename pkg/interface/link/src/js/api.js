@@ -106,6 +106,22 @@ class UrbitApi {
     }
   }
 
+  async getPage(path, page) {
+    let endpoint = "/~link/submissions" + path + ".json?p=" + page;
+    let promise = await fetch(endpoint);
+    if (promise.ok) {
+      let resolvedPage = await promise.json();
+      let update = {};
+      update["link-update"] = {};
+      update["link-update"].page = {};
+      update["link-update"].page[path] = {
+        "page": page
+      };
+      update["link-update"].page[path].links = resolvedPage.page;
+      store.handleEvent(update);
+    }
+  }
+
   async postLink(path, url, title) {
     let json = 
     { 'path': path,
@@ -142,7 +158,6 @@ class UrbitApi {
   }
 
   async postComment(path, url, comment, page, index) {
-    console.log('got the postComment')
     let json = {
       'path': path,
       'url': url,

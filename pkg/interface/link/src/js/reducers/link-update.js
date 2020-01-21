@@ -7,6 +7,7 @@ export class LinkUpdateReducer {
       this.add(data, state);
       this.comments(data, state);
       this.commentAdd(data, state);
+      this.page(data, state);
     }
   }
 
@@ -54,6 +55,17 @@ export class LinkUpdateReducer {
       tempArray.unshift(tempObj);
       state.links[path][page][index].comments.page = tempArray;
     }
+  }
 
+  page(json, state) {
+    let data = _.get(json, 'page', false);
+    if (data) {
+      let path = Object.keys(data)[0];
+      let page = "page" + data[path].page;
+      if (!state.links[path]) {
+        state.links[path] = {};
+      }
+      state.links[path][page] = data[path].links;
+    }
   }
 }

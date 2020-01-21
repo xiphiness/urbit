@@ -49790,10 +49790,19 @@
               data = lodash.get(json, 'link', false);
               if (data) {
                 let name = Object.keys(data)[0];
-                state.links[name] = {};
-                state.links[name]["total-pages"] = data[name]["total-pages"];
-                state.links[name]["total-items"] = data[name]["total-items"];
-                state.links[name]["page0"] = data[name]["page"];
+                let initial = {};
+                initial[name] = {};
+                initial[name]["total-pages"] = data[name]["total-pages"];
+                initial[name]["total-items"] = data[name]["total-items"];
+                initial[name]["page0"] = data[name]["page"];
+
+                if (!!state.links[name]) {
+                  let origin = state.links[name];
+                  lodash.extend(initial[name], origin);
+                } else {
+                  state.links[name] = {};
+                }
+                state.links[name] = initial[name];
               }
               }
             }
@@ -49853,6 +49862,7 @@
                   this.add(data, state);
                   this.comments(data, state);
                   this.commentAdd(data, state);
+                  this.page(data, state);
                 }
               }
 
@@ -49900,7 +49910,18 @@
                   tempArray.unshift(tempObj);
                   state.links[path][page][index].comments.page = tempArray;
                 }
+              }
 
+              page(json, state) {
+                let data = lodash.get(json, 'page', false);
+                if (data) {
+                  let path = Object.keys(data)[0];
+                  let page = "page" + data[path].page;
+                  if (!state.links[path]) {
+                    state.links[path] = {};
+                  }
+                  state.links[path][page] = data[path].links;
+                }
               }
             }
 
@@ -54682,6 +54703,22 @@
                 }
               }
 
+              async getPage(path, page) {
+                let endpoint = "/~link/submissions" + path + ".json?p=" + page;
+                let promise = await fetch(endpoint);
+                if (promise.ok) {
+                  let resolvedPage = await promise.json();
+                  let update = {};
+                  update["link-update"] = {};
+                  update["link-update"].page = {};
+                  update["link-update"].page[path] = {
+                    "page": page
+                  };
+                  update["link-update"].page[path].links = resolvedPage.page;
+                  store.handleEvent(update);
+                }
+              }
+
               async postLink(path, url, title) {
                 let json = 
                 { 'path': path,
@@ -54718,7 +54755,6 @@
               }
 
               async postComment(path, url, comment, page, index) {
-                console.log('got the postComment');
                 let json = {
                   'path': path,
                   'url': url,
@@ -54770,8 +54806,8 @@
 
             }
 
-            let api = new UrbitApi();
-            window.api = api;
+            let api$1 = new UrbitApi();
+            window.api = api$1;
 
             var lookup = [];
             var revLookup = [];
@@ -63266,7 +63302,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
 
             class Subscription {
               start() {
-                if (api.authTokens) {
+                if (api$1.authTokens) {
                   this.initializeLinks();
                 } else {
                   console.error("~~~ ERROR: Must set api.authTokens before operation ~~~");
@@ -63276,11 +63312,11 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               initializeLinks() {
                 // add invite, permissions flows once link stores are more than
                 // group-specific
-                api.bind('/all', 'PUT', api.authTokens.ship, 'group-store',
+                api$1.bind('/all', 'PUT', api$1.authTokens.ship, 'group-store',
                 this.handleEvent.bind(this),
                 this.handleError.bind(this),
                 this.handleQuitAndResubscribe.bind(this));
-                api.bind('/primary', 'PUT', api.authTokens.ship, 'contact-view',
+                api$1.bind('/primary', 'PUT', api$1.authTokens.ship, 'contact-view',
                   this.handleEvent.bind(this),
                   this.handleError.bind(this),
                   this.handleQuitAndResubscribe.bind(this));
@@ -63513,7 +63549,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                     , react.createElement('a', {
                       className: "pointer flex-shrink-0" ,
                       onClick: () => {
-                        api.sidebarToggle();
+                        api$1.sidebarToggle();
                       }, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 13}}
                       , react.createElement('img', {
                         className: `pr3 dn ` + popoutSwitcher,
@@ -67517,7 +67553,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                 let title = (this.state.linkTitle)
                 ? this.state.linkTitle
                 : this.state.linkValue;
-                let request = api.postLink(this.props.path, link, title);
+                let request = api$1.postLink(this.props.path, link, title);
 
                 if (request) {
                   this.setState({linkValue: "", linkTitle: ""});
@@ -67615,6 +67651,14 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
             const _jsxFileName$8 = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/js/components/links-list.js";
 
             class Links extends react_1 {
+
+              componentDidMount() {
+                let linkPage = "page" + this.props.page;
+                if ((this.props.page !== 0) && (!this.props.links[linkPage])) {
+                  api.getPage(this.props.path, this.props.page);
+                }
+              }
+
               render() {
                 let props = this.props;
                 let popout = (props.popout) ? "/popout" : "";
@@ -67664,33 +67708,33 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                     color: color,
                     comments: commentCount,
                     channel: channel,
-                    popout: popout, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 50}}
+                    popout: popout, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 58}}
                     )
                   )
                 });
 
                 return (
                   react.createElement('div', {
-                  className: "h-100 w-100 overflow-hidden flex flex-column"    , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 68}}
+                  className: "h-100 w-100 overflow-hidden flex flex-column"    , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 76}}
                     , react.createElement('div', {
                       className: "w-100 dn-m dn-l dn-xl inter pt4 pb6 pl3 f8"        ,
-                      style: { height: "1rem" }, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 70}}
-                     , react.createElement(Link$1, { to: "/~link/", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 73}}, "⟵ All Channels")
+                      style: { height: "1rem" }, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 78}}
+                     , react.createElement(Link$1, { to: "/~link/", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 81}}, "⟵ All Channels")
                    )
                    , react.createElement('div', {
                      className: `pl3 pt2 flex relative overflow-x-scroll 
          overflow-x-auto-l overflow-x-auto-xl flex-shrink-0
          bb bn-m bn-l bn-xl b--gray4`,
-                     style: { height: 48 }, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 75}}
+                     style: { height: 48 }, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 83}}
                       , react.createElement(SidebarSwitcher, {
                        sidebarShown: props.sidebarShown,
-                       popout: props.popout, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 80}})
-                     , react.createElement(Link$1, { to: `/~link` + popout + props.path, className: "pt2", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 83}}
+                       popout: props.popout, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 88}})
+                     , react.createElement(Link$1, { to: `/~link` + popout + props.path, className: "pt2", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 91}}
                        , react.createElement('h2', {
                          className: `dib f8 fw4 v-top ` + 
                          (props.path.includes("/~/")
                          ? ""
-                         : "mono"), __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 84}}
+                         : "mono"), __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 92}}
                           , (props.path.includes("/~/"))
                           ? "Private"
                           : channel
@@ -67699,14 +67743,14 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                       , react.createElement(LinksTabBar, {
                       ...props,
                       popout: popout,
-                      path: props.path, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 94}})
+                      path: props.path, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 102}})
                     )
-                    , react.createElement('div', { className: "w-100 mt6 flex justify-center overflow-y-scroll pa4"     , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 99}}
-                      , react.createElement('div', { className: "w-100 mw7" , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 100}}
-                        , react.createElement('div', { className: "flex", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 101}}
-                          , react.createElement(LinkSubmit, { path: props.path, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 102}})
+                    , react.createElement('div', { className: "w-100 mt6 flex justify-center overflow-y-scroll pa4"     , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 107}}
+                      , react.createElement('div', { className: "w-100 mw7" , __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 108}}
+                        , react.createElement('div', { className: "flex", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 109}}
+                          , react.createElement(LinkSubmit, { path: props.path, __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 110}})
                         )
-                        , react.createElement('div', { className: "pb4", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 104}}
+                        , react.createElement('div', { className: "pb4", __self: this, __source: {fileName: _jsxFileName$8, lineNumber: 112}}
                         , LinkList
                         /*TODO Pagination */
                         )
@@ -67839,7 +67883,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                   let comments = !!props.data.comments;
                   
                   if (!comments) {
-                    api.getComments(props.path, props.data.url, props.page, props.link);
+                    api$1.getComments(props.path, props.data.url, props.page, props.link);
                   }
                 }
 
@@ -67856,7 +67900,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
                   let comments = !!this.props.data.comments;
                   
                   if (!comments && this.props.data.url) {
-                    api.getComments(props.path, props.data.url, props.page, props.link);
+                    api$1.getComments(props.path, props.data.url, props.page, props.link);
                   }
                 }
 
@@ -67881,7 +67925,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
               onClickPost() {
                 let url = this.props.data.url || "";
 
-                let request = api.postComment(
+                let request = api$1.postComment(
                   this.props.path, 
                   url, 
                   this.state.comment, 
@@ -68225,7 +68269,7 @@ lyrtesmudnytbyrsenwegfyrmurtelreptegpecnelnevfes\
             }
 
             const _jsxFileName$f = "/Users/matilde/git/tlon/urbit/pkg/interface/link/src/index.js";
-            api.setAuthTokens({
+            api$1.setAuthTokens({
               ship: window.ship
             });
 

@@ -10,6 +10,14 @@ import { uxToHex } from '../lib/util';
 
 
 export class Links extends Component {
+
+  componentDidMount() {
+    let linkPage = "page" + this.props.page;
+    if ((this.props.page !== 0) && (!this.props.links[linkPage])) {
+      api.getPage(this.props.path, this.props.page);
+    }
+  }
+
   render() {
     let props = this.props;
     let popout = (props.popout) ? "/popout" : "";
