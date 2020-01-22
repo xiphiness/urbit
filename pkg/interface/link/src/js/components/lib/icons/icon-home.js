@@ -1,0 +1,10 @@
+import React, { Component } from 'react';
+
+export class IconHome extends Component {
+  render() {
+    return (
+      //TODO relocate to ~launch when OS1 is ported
+      <img src="/~link/img/Home.png" width={16} height={16} />
+    );
+  }
+}
