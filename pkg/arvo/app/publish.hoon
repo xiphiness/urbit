@@ -150,17 +150,18 @@
     ::
     ++  kill-builds
       ^-  (list card)
-      %-  zing
-      %+  turn  ~(tap by pubs.zero)
-      |=  [col-name=@tas col-data=collection-zero]
-      ^-  (list card)
-      :-  [%pass /collection/[col-name] %arvo %f %kill ~]
-      %-  zing
-      %+  turn  ~(tap by pos.col-data)
-      |=  [pos-name=@tas *]
-      :~  [%pass /post/[col-name]/[pos-name] %arvo %f %kill ~]
-          [%pass /comments/[col-name]/[pos-name] %arvo %f %kill ~]
-      ==
+      ~
+      :: %-  zing
+      :: %+  turn  ~(tap by pubs.zero)
+      :: |=  [col-name=@tas col-data=collection-zero]
+      :: ^-  (list card)
+      :: :-  [%pass /collection/[col-name] %arvo %f %kill ~]
+      :: %-  zing
+      :: %+  turn  ~(tap by pos.col-data)
+      :: |=  [pos-name=@tas *]
+      :: :~  [%pass /post/[col-name]/[pos-name] %arvo %f %kill ~]
+      ::     [%pass /comments/[col-name]/[pos-name] %arvo %f %kill ~]
+      :: ==
     ::
     ++  send-invites
       |=  [book=@tas subscribers=(set @p)]
@@ -179,48 +180,53 @@
     ++  move-files
       |=  old-subs=(jug @tas @p)
       ^-  (list card)
-      =+  ^-  [cards=(list card) sob=soba:clay]
-        %+  roll  .^((list path) %ct (weld our-beak /web/publish))
-        |=  [pax=path car=(list card) sob=soba:clay]
-        ^-  [(list card) soba:clay]
-        ?+    pax
-            [car sob]
-        ::
-            [%web %publish @ %publish-info ~]
-          =/  book-name  i.t.t.pax
-          =/  book=notebook-info  .^(notebook-info %cx (welp our-beak pax))
-          =+  ^-  [grp-car=(list card) writers-path=path subscribers-path=path]
-            (make-groups book-name [%new ~ ~ %journal])
-          =.  writers.book  writers-path
-          =.  subscribers.book  subscribers-path
-          =/  inv-car  (send-invites book-name (~(get ju old-subs) book-name))
-          :-  :(weld car grp-car inv-car)
-          ^-  soba:clay
-          :+  [pax %del ~]
-            :-  /app/publish/notebooks/[book-name]/publish-info
-            [%ins %publish-info !>(book)]
-          sob
-        ::
-            [%web %publish @ @ %udon ~]
-          =/  book  i.t.t.pax
-          =/  note  i.t.t.t.pax
-          :-  car
-          :+  [pax %del ~]
-            :-  /app/publish/notebooks/[book]/[note]/udon
-            [%ins %udon !>(.^(@t %cx (welp our-beak pax)))]
-          sob
-        ::
-            [%web %publish @ @ @ %publish-comment ~]
-          =/  book  i.t.t.pax
-          =/  note  i.t.t.t.pax
-          =/  comm  i.t.t.t.t.pax
-          :-  car
-          :+  [pax %del ~]
-            :-  /app/publish/notebooks/[book]/[note]/[comm]/publish-comment
-            [%ins %publish-comment !>(.^(comment %cx (welp our-beak pax)))]
-          sob
-        ==
-      [[%pass /move-files %arvo %c %info q.byk.bol %& sob] cards]
+      ~
+      :: =+  ^-  [cards=(list card) sob=soba:clay]
+      ::   %+  roll  .^((list path) %ct (weld our-beak:main /web/publish))
+      ::   |=  [pax=path car=(list card) sob=soba:clay]
+      ::   ^-  [(list card) soba:clay]
+      ::   ?+    pax
+      ::       [car sob]
+      ::   ::
+      ::       [%web %publish @ %publish-info ~]
+      ::     =/  book-name  i.t.t.pax
+      ::     =/  old=old-info  .^(old-info %cx (welp our-beak:main pax))
+      ::     =/  book=notebook-info  [title.old '' =(%open comments.old) / /]
+      ::     =+  ^-  [grp-car=(list card) writers-path=path subscribers-path=path]
+      ::       (make-groups book-name [%new ~ ~ %journal])
+      ::     =.  writers.book  writers-path
+      ::     =.  subscribers.book  subscribers-path
+      ::     =/  inv-car  (send-invites book-name (~(get ju old-subs) book-name))
+      ::     :-  :(weld car grp-car inv-car)
+      ::     ^-  soba:clay
+      ::     :+  [pax %del ~]
+      ::       :-  /app/publish/notebooks/[book-name]/publish-info
+      ::       [%ins %publish-info !>(book)]
+      ::     sob
+      ::   ::
+      ::       [%web %publish @ @ %udon ~]
+      ::     =/  book  i.t.t.pax
+      ::     =/  note  i.t.t.t.pax
+      ::     :-  car
+      ::     :+  [pax %del ~]
+      ::       :-  /app/publish/notebooks/[book]/[note]/udon
+      ::       [%ins %udon !>(.^(@t %cx (welp our-beak:main pax)))]
+      ::     sob
+      ::   ::
+      ::       [%web %publish @ @ @ %publish-comment ~]
+      ::     =/  book  i.t.t.pax
+      ::     =/  note  i.t.t.t.pax
+      ::     =/  comm  i.t.t.t.t.pax
+      ::     =/  old=old-comment  .^(old-comment %cx (welp our-beak:main pax))
+      ::     =/  new=comment  [creator.old date-created.old content.old]
+      ::     :-  car
+      ::
+      ::     :+  [pax %del ~]
+      ::       :-  /app/publish/notebooks/[book]/[note]/[comm]/publish-comment
+      ::       [%ins %publish-comment !>(new)]
+      ::     sob
+      ::   ==
+      :: [[%pass /move-files %arvo %c %info q.byk.bol %& sob] cards]
     --
   ::
   ++  on-poke
@@ -1075,7 +1081,7 @@
       (~(get by subs) who.act book.act)
     ?~  book
       ~|("nonexistent notebook: {<book.act>}" !!)
-    =/  not=(unit note)  (~(get by notes.u.book) note.act) 
+    =/  not=(unit note)  (~(get by notes.u.book) note.act)
     ?~  not
       ~|("nonexistent note: {<note.act>}" !!)
     =?  tile-num  !read.u.not

@@ -680,6 +680,7 @@
       ap-abet:app
     =/  =sign:agent  +>.sign-arvo
     =/  app
+      ~|  path
       ?>  ?=([%out @ @ *] t.t.path)
       =/  =term  i.path
       =/  =ship  (slav %p i.t.t.t.path)

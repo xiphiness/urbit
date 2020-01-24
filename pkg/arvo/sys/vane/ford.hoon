@@ -1250,6 +1250,12 @@
     ::    %made moves at the end of this event. Otherwise, it will
     ::    block on resources and complete during a later event.
     ::
+    ~|  %+  turn  builds
+        |=  =build
+        =/  bs=(unit build-status)
+          (~(get by builds.state) build)
+        ?~  bs  [%weird (build-to-tape build)]
+        requesters.u.bs
     (execute-loop ~)
   ::  +unblock: continue builds that had blocked on :resource
   ::
@@ -1463,6 +1469,7 @@
     ?:  ?=(%once -.live.u.duct-status)
       ::
       =/  root-build=build  [in-progress.live root-schematic]:u.duct-status
+      ~&  [%cancel-once (build-to-tape root-build)]
       ::
       =.  ..execute  (cancel-scrys root-build)
       =.  state  (remove-anchor-from-root root-build [%duct duct])
@@ -1472,6 +1479,7 @@
     =?  ..execute  ?=(^ in-progress.live.u.duct-status)
       ::
       =/  root-build=build  [u.in-progress.live root-schematic]:u.duct-status
+      ~&  [%cancel-live-in-progress (build-to-tape root-build)]
       ::
       =.  ..execute  (cancel-scrys root-build)
       =.  state  (remove-anchor-from-root root-build [%duct duct])
@@ -1479,15 +1487,18 @@
     ::  if there is no completed build for the live duct, we're done
     ::
     ?~  last-sent=last-sent.live.u.duct-status
+      ~&  [%cancel-no-completed duct]
       ..execute
     ::  there is a completed build for the live duct, so delete it
     ::
     =/  root-build=build  [date.u.last-sent root-schematic.u.duct-status]
+    ~&  [%cancel-completed (build-to-tape root-build)]
     ::
     =.  state  (remove-anchor-from-root root-build [%duct duct])
     ::
     ?~  subscription.u.last-sent
       ..execute
+    ~&  %cancelling-clay
     (cancel-clay-subscription u.subscription.u.last-sent)
   ::  +cancel-scrys: cancel all blocked %scry sub-builds of :root-builds
   ::
@@ -1571,13 +1582,24 @@
     |=  [=build =anchor]
     ^+  state
     ::
+    =/  dbug-case
+      ?&  ?=(%plan -.schematic.build)
+           .=  /hoon/publish/lib
+           spur.source-rail.scaffold.schematic.build
+      ==
+    ~?  dbug-case
+      [%remove-anchor-1 (~(has by builds.state) build) `@p`(mug build)]
     =.  builds.state
       %+  ~(jab by builds.state)  build
       |=  =build-status
       build-status(requesters (~(del in requesters.build-status) anchor))
     ::
+    ~?  dbug-case
+      [%remove-anchor-2 (~(has by builds.state) build) `@p`(mug build)]
     =.  builds.state  (remove-anchor-from-subs build anchor)
     ::
+    ~?  dbug-case
+      [%remove-anchor-3 (~(has by builds.state) build) `@p`(mug build)]
     (cleanup build)
   ::  +remove-anchor-from-subs: recursively remove :anchor from sub-builds
   ::
@@ -1786,6 +1808,17 @@
     ::
     =.  ..execute  (gather builds force=%.n)
     ::
+    ::
+    =/  somelist
+      %+  murn  ~(tap in next-builds)
+      |=  =build
+      ?.  ?&  ?=(%plan -.schematic.build)
+              .=  /hoon/publish/lib
+              spur.source-rail.scaffold.schematic.build
+          ==
+        ~
+      `u=[%execute (~(has by builds.state) build) `@p`(mug build)]
+    ~?  ?=(^ `(list)`somelist)  somelist
     =^  build-receipts  ..execute  run-builds
     ::
     (reduce build-receipts)
@@ -1812,6 +1845,11 @@
         =/  next=build
           ?<  ?=(~ candidate-builds)
           n.candidate-builds
+        ~?  ?&  ?=(%plan -.schematic.next)
+               .=  /hoon/publish/lib
+               spur.source-rail.scaffold.schematic.next
+            ==
+          [%gather-loop (~(has by builds.state) next) `@p`(mug next)]
         =.  candidate-builds  (~(del in candidate-builds) next)
         ::
         $(..execute (gather-build next))
@@ -1825,6 +1863,7 @@
       |=  =build
       ^+  ..execute
       ~|  [%duct duct]
+      ~&  [%gather-build (build-to-tape build)]
       =/  duct-status  (~(got by ducts.state) duct)
       ::  if we already have a result for this build, don't rerun the build
       ::
@@ -1838,8 +1877,17 @@
       ::  ignore blocked builds
       ::
       =/  =build-status  (~(got by builds.state) build)
+      =/  dbug-case=?
+        ?&  ?=(%plan -.schematic.build)
+               .=  /hoon/publish/lib
+               spur.source-rail.scaffold.schematic.build
+          ==
+      ~?  dbug-case
+        [%gather %got-our-build `@p`(mug build)]
       ?:  ?=(%blocked -.state.build-status)
         =.  state  (add-anchors-to-build-subs build)
+        ~?  dbug-case
+          [%gather-2 (~(has by builds.state) build) `@p`(mug build)]
         ::
         =/  sub-scrys=(list scry-request)
           ~(tap in (collect-blocked-sub-scrys build))
@@ -1885,7 +1933,11 @@
       ::  if no previous builds exist, we need to run :build
       ::
       ?~  old-build
-        (add-build-to-next build)
+        =.  ..execute
+          (add-build-to-next build)
+        ~?  dbug-case
+          [%gather-3 (~(has by builds.state) build) `@p`(mug build)]
+        ..execute
       ::
       =/  old-build-status=^build-status
         ~|  [%missing-old-build (build-to-tape u.old-build)]
@@ -1911,12 +1963,22 @@
                       %-  ~(has in resources.u.subscription)
                       resource.schematic.build
           ==  ==  ==
-        (add-build-to-next build)
+        =.  ..execute
+          (add-build-to-next build)
+        ~?  dbug-case
+          [%gather-4 (~(has by builds.state) build) `@p`(mug build)]
+        ..execute
       ::  if we don't have :u.old-build's result cached, we need to run :build
       ::
       =^  old-build-record  builds.state  (access-build-record u.old-build)
+      ~?  dbug-case
+        [%gather-5 (~(has by builds.state) build) `@p`(mug build)]
       ?.  ?=([~ %value *] old-build-record)
-        (add-build-to-next build)
+        =.  ..execute
+          (add-build-to-next build)
+        ~?  dbug-case
+          [%gather-6 (~(has by builds.state) build) `@p`(mug build)]
+        ..execute
       ::
       =.  old-build-status  (~(got by builds.state) u.old-build)
       ::
@@ -1945,10 +2007,16 @@
       ::
       =.  builds.state
         (add-subs-to-client build stored-new-subs [verified=%.n blocked=%.n])
+      ~?  dbug-case
+        [%gather-7 (~(has by builds.state) build) `@p`(mug build)]
       =.  builds.state
         (add-subs-to-client build un-stored-new-subs [verified=%.n blocked=%.y])
+      ~?  dbug-case
+        [%gather-8 (~(has by builds.state) build) `@p`(mug build)]
       ::
       =.  state  (add-anchors-to-build-subs build)
+      ~?  dbug-case
+        [%gather-9 (~(has by builds.state) build) `@p`(mug build)]
       ::
       ?^  un-stored-new-subs
         ::  enqueue incomplete sub-builds to be promoted or run
@@ -1968,8 +2036,14 @@
         ==
       ::
       =^  promotable  builds.state  (are-subs-unchanged old-subs new-subs)
+      ~?  dbug-case
+        [%gather-10 (~(has by builds.state) build) `@p`(mug build)]
       ?.  promotable
-        (add-build-to-next build)
+        =.  ..execute
+          (add-build-to-next build)
+        ~?  dbug-case
+          [%gather-11 (~(has by builds.state) build) `@p`(mug build)]
+        ..execute
       ::
       ?>  =(schematic.build schematic.u.old-build)
       ?>  (~(has by builds.state) build)
@@ -2010,6 +2084,13 @@
       ::  grab the previous result, freshening the cache
       ::
       =^  old-build-record  builds.state  (access-build-record old-build)
+      =/  dbug-case
+        ?&  ?=(%plan -.schematic.old-build)
+             .=  /hoon/publish/lib
+             spur.source-rail.scaffold.schematic.old-build
+        ==
+      ~?  dbug-case
+        [%promote-1 (~(has by builds.state) old-build) `@p`(mug old-build)]
       ::  we can only promote a cached result, not missing or a %tombstone
       ::
       ?>  ?=([~ %value *] old-build-record)
@@ -2040,6 +2121,8 @@
             state
           [%complete [%value last-accessed=now build-result=build-result]]
         ==
+      ~?  dbug-case
+        [%promote-2 (~(has by builds.state) old-build) `@p`(mug old-build)]
       ::
       (on-build-complete new-build)
     --
@@ -2058,7 +2141,14 @@
     ^-  [(list build-receipt) _..execute]
     ::
     =/  build-receipts=(list build-receipt)
-      (turn ~(tap in next-builds) make)
+      %+  turn  ~(tap in next-builds)
+      |=  =build
+      ~?  ?&  ?=(%plan -.schematic.build)
+             .=  /hoon/publish/lib
+             spur.source-rail.scaffold.schematic.build
+          ==
+        [%run-build (~(has by builds.state) build) `@p`(mug build)]
+      (make build)
     ::
     =.  next-builds  ~
     [build-receipts ..execute]
@@ -2068,7 +2158,7 @@
   ::    +build-receipts. It is in +reduce where we take these +build-receipts
   ::    and apply them to ..execute.
   ::
-  ++  reduce  !.
+  ++  reduce
     ~/  %reduce
     |=  build-receipts=(list build-receipt)
     ^+  ..execute
@@ -2082,6 +2172,9 @@
     ::    on the sub-build, so we can enqueue those blocked clients to be
     ::    rerun.
     ::
+    :: =/  is-weird=?
+    ::   (lien duct |=(=wire ?=(^ (find /g/use/publish/~zod/post/urbit-only-exclusive-tweets/zod-is-thy-neighbour wire))))
+    :: ~?  is-weird  %reduce-weird
     =.  build-receipts
       %+  sort  build-receipts
       |=  [a=build-receipt b=build-receipt]
@@ -2098,8 +2191,14 @@
     ++  apply-build-receipt
       |=  made=build-receipt
       ^+  ..execute
+      :: ~?  is-weird  (build-to-tape build.made)
       ::  process :sub-builds.made
       ::
+      ~?  ?&  ?=(%plan -.schematic.build.made)
+               .=  /hoon/publish/lib
+               spur.source-rail.scaffold.schematic.build.made
+          ==
+        [%apply-build-receipt (~(has by builds.state) build.made) `@p`(mug build.made) done=-.result.made]
       =.  state  (track-sub-builds build.made sub-builds.made)
       ::
       ?-    -.result.made
@@ -2226,6 +2325,11 @@
     ~/  %make
     |=  =build
     ^-  build-receipt
+    ~?  ?&  ?=(%plan -.schematic.build)
+             .=  /hoon/publish/lib
+             spur.source-rail.scaffold.schematic.build
+        ==
+      [%make (~(has by builds.state) build) `@p`(mug build)]
     ::  out: receipt to return to caller
     ::
     =|  out=build-receipt
@@ -5490,6 +5594,11 @@
     ^+  state
     ::  don't overwrite an existing entry
     ::
+    ~?  ?&  ?=(%plan -.schematic.build)
+           .=  /hoon/publish/lib
+           spur.source-rail.scaffold.schematic.build
+        ==
+      [%add-build (~(has by builds.state) build) `@p`(mug build)]
     ?:  (~(has by builds.state) build)
       state
     ::
@@ -5538,6 +5647,11 @@
       ::  nothing depends on :build, so we'll remove it
       ::
       :-  removed=&
+      ~?  ?&  ?=(%plan -.schematic.build)
+             .=  /hoon/publish/lib
+             spur.source-rail.scaffold.schematic.build
+          ==
+        [%removing (~(has by builds.state) build) `@p`(mug build)]
       ::
       %_    state
           builds-by-schematic
@@ -5661,11 +5775,21 @@
     ::
     =/  duct-status  (~(got by ducts.state) duct)
     ::
+    =/  dbug-case
+      ?&  ?=(%plan -.schematic.build)
+           .=  /hoon/publish/lib
+           spur.source-rail.scaffold.schematic.build
+      ==
     =/  =build-status  (~(got by builds.state) build)
     ?:  (~(has in requesters.build-status) [%duct duct])
-      (on-root-build-complete build)
+      =.  ..execute  (on-root-build-complete build)
+      ~?  dbug-case
+        [%complete-1 (~(has by builds.state) build) `@p`(mug build)]
+      ..execute
     ::
     =^  unblocked-clients  builds.state  (unblock-clients-on-duct build)
+    ~?  dbug-case
+      [%complete-2 (~(has by builds.state) build) `@p`(mug build)]
     =.  candidate-builds  (~(gas in candidate-builds) unblocked-clients)
     ::
     ..execute
@@ -5819,6 +5943,13 @@
       `sub
     ::  remove links to orphans in :build's +build-status
     ::
+    =/  dbug-case
+      ?&  ?=(%plan -.schematic.build)
+           .=  /hoon/publish/lib
+           spur.source-rail.scaffold.schematic.build
+      ==
+    ~?  dbug-case
+      [%cleanup-orph-1 (~(has by builds.state) build) `@p`(mug build)]
     =^  build-status  builds.state
       %+  update-build-status  build
       |=  build-status=^build-status
@@ -5832,11 +5963,23 @@
         ::
         $(orphans t.orphans)
       ==
+    ~?  dbug-case
+      [%cleanup-orph-2 (~(has by builds.state) build) `@p`(mug build)]
     ::
     =/  =anchor  [%duct duct]
     ::
     |-  ^+  ..execute
-    ?~  orphans  ..execute
+    ?~  orphans
+      ~?  dbug-case
+        [%cleanup-orph-end (~(has by builds.state) build) `@p`(mug build)]
+      ..execute
+    =/  dbug-case
+      ?&  ?=(%plan -.schematic.i.orphans)
+           .=  /hoon/publish/lib
+           spur.source-rail.scaffold.schematic.i.orphans
+      ==
+    ~?  dbug-case
+      [%cleanup-orph-3 (~(has by builds.state) i.orphans) `@p`(mug i.orphans)]
     ::  remove link to :build in :i.orphan's +build-status
     ::
     =^  orphan-status  builds.state
@@ -5846,12 +5989,18 @@
         clients  (~(del ju clients.orphan-status) anchor build)
       ==
     ::
+    ~?  dbug-case
+      [%cleanup-orph-4 (~(has by builds.state) i.orphans) `@p`(mug i.orphans)]
     ?:  (~(has by clients.orphan-status) anchor)
       $(orphans t.orphans)
     ::  :build was the last client on this duct so remove it
     ::
     =.  builds.state  (remove-anchor-from-subs i.orphans anchor)
+    ~?  dbug-case
+      [%cleanup-orph-5 (~(has by builds.state) i.orphans) `@p`(mug i.orphans)]
     =.  state  (cleanup i.orphans)
+    ~?  dbug-case
+      [%cleanup-orph-6 (~(has by builds.state) i.orphans) `@p`(mug i.orphans)]
     $(orphans t.orphans)
   ::  +access-build-record: access a +build-record, updating :last-accessed
   ::
@@ -6138,6 +6287,7 @@
   ::
   =*  this-event  (per-event [our duct now scry-gate] state.ax)
   ::
+  ~&  [%f -.task]
   ?-    -.task
       ::  %build: request to perform a build
       ::
@@ -6150,6 +6300,7 @@
     ::    We update our :state and produce it along with :moves.
     ::
     =/  =build  [now schematic.task]
+    ~&  [duct (build-to-tape build)]
     =^  moves  state.ax  (start-build:this-event build live.task)
     ::
     [moves ford-gate]
@@ -6255,6 +6406,7 @@
   |^  ^-  [(list move) _ford-gate]
       ::
       =^  moves  state.ax
+        ~&  [%f %take wire duct]
         ?+  i.wire     ~|([%bad-take-wire wire] !!)
           %clay-sub      take-rebuilds
           %scry-request  take-unblocks
@@ -6269,6 +6421,7 @@
       ?>  ?=([@tas %wris *] sign)
       =*  case-sign  p.sign
       =*  care-paths-sign  q.sign
+      ~&  [%changed care-paths-sign]
       =+  [ship desk date]=(raid:wired t.wire ~[%p %tas %da])
       =/  disc  [ship desk]
       ::
