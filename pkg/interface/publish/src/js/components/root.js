@@ -18,6 +18,7 @@ export class Root extends Component {
 
   render() {
     const { props, state } = this;
+    console.log('st not', state.notebooks);
 
     return (
       <BrowserRouter>
@@ -69,6 +70,25 @@ export class Root extends Component {
                   </Skeleton>
                 )
               }}/>
+      <Route exact path="/~publish/(popout)?/:ship/:notebook/:note"
+        render={ (props) => {
+          console.log('ppp', props);
+
+          return (
+            <Skeleton
+            popout={false}
+            active={"rightPanel"}
+            rightPanelHide={false}
+            sidebarShown={true}
+            notebooks={state.notebooks}>
+              <Note
+              notebooks={state.notebooks}
+              ship={props.match.params.ship}
+              notebook={props.match.params.notebook}
+              note={props.match.params.note}/>
+            </Skeleton>
+          )
+        }}/>
       <Route exact path="/~publish/(popout)?/:ship/:notebook/:view?"
         render={ (props) => {
           let view = (props.match.params.view)
@@ -85,21 +105,6 @@ export class Root extends Component {
               <Notebook
               notebooks={state.notebooks}
               view={view}/>
-            </Skeleton>
-          )
-        }}/>
-      <Route exact path="/~publish/(popout)?/:ship/:notebook/:note"
-        render={ (props) => {
-          
-          return (
-            <Skeleton
-            popout={false}
-            active={"rightPanel"}
-            rightPanelHide={false}
-            sidebarShown={true}
-            notebooks={state.notebooks}>
-              <Note
-              notebooks={state.notebooks}/>
             </Skeleton>
           )
         }}/>

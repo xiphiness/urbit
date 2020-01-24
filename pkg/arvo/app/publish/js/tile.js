@@ -2123,7 +2123,7 @@
             }());
             });
 
-            const _jsxFileName = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/tile/tile.js";
+            const _jsxFileName = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/tile/tile.js";
 
             class PublishTile extends react_1 {
               constructor(props){

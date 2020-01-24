@@ -23849,7 +23849,7 @@
             }
             });
 
-            const _jsxFileName = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/icons/icon-home.js";
+            const _jsxFileName = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/icons/icon-home.js";
             class IconHome extends react_1 {
               render() {
                 return (
@@ -27768,7 +27768,7 @@
             var dist_2 = dist.sigil;
             var dist_3 = dist.stringRenderer;
 
-            const _jsxFileName$1 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/icons/sigil.js";
+            const _jsxFileName$1 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/icons/sigil.js";
             class Sigil extends react_1 {
               render() {
                 const { props } = this;
@@ -27793,7 +27793,7 @@
               }
             }
 
-            const _jsxFileName$2 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/header-bar.js";
+            const _jsxFileName$2 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/header-bar.js";
             class HeaderBar extends react_1 {
               render() {
 
@@ -31209,7 +31209,7 @@
              */
 
 
-            var Link =
+            var Link$1 =
             /*#__PURE__*/
             function (_React$Component) {
               _inheritsLoose(Link, _React$Component);
@@ -31271,7 +31271,7 @@
               var innerRefType = propTypes.oneOfType([propTypes.string, propTypes.func, propTypes.shape({
                 current: propTypes.any
               })]);
-              Link.propTypes = {
+              Link$1.propTypes = {
                 innerRef: innerRefType,
                 onClick: propTypes.func,
                 replace: propTypes.bool,
@@ -31323,7 +31323,7 @@
                 var isActive = !!(isActiveProp ? isActiveProp(match, context.location) : match);
                 var className = isActive ? joinClassnames(classNameProp, activeClassName) : classNameProp;
                 var style = isActive ? _extends({}, styleProp, activeStyle) : styleProp;
-                return react.createElement(Link, _extends({
+                return react.createElement(Link$1, _extends({
                   "aria-current": isActive && ariaCurrent || null,
                   className: className,
                   style: style,
@@ -31334,7 +31334,7 @@
 
             {
               var ariaCurrentType = propTypes.oneOf(["page", "step", "location", "date", "time", "true"]);
-              NavLink.propTypes = _extends({}, Link.propTypes, {
+              NavLink.propTypes = _extends({}, Link$1.propTypes, {
                 "aria-current": ariaCurrentType,
                 activeClassName: propTypes.string,
                 activeStyle: propTypes.object,
@@ -48885,7 +48885,7 @@
             let store$1 = new Store();
             window.store = store$1;
 
-            const _jsxFileName$3 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/sidebar.js";
+            const _jsxFileName$3 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/sidebar.js";
             class Sidebar extends react_1 {
               constructor(props) {
                 super(props);
@@ -48922,12 +48922,12 @@
                     : "dn"), __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 36}}
                     , react.createElement('a', { className: "db dn-m dn-l dn-xl f8 pb3 pl3"      , href: "/", __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 41}}, "⟵ Landscape" )
                     , react.createElement('div', { className: "w-100 pa4" , __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 42}}
-                      , react.createElement(Link, {
+                      , react.createElement(Link$1, {
                       to: "/~publish/new",
                       className: "green2 mr4 f9"  , __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 43}}, "New"
 
                       )
-                      , react.createElement(Link, {
+                      , react.createElement(Link$1, {
                       to: "/~publish/join",
                       className: "f9 gray2" , __self: this, __source: {fileName: _jsxFileName$3, lineNumber: 48}}, "Join"
 
@@ -48946,17 +48946,19 @@
               }
             }
 
-            const _jsxFileName$4 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/skeleton.js";
+            const _jsxFileName$4 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/skeleton.js";
             class Skeleton extends react_1 {
               render() {
                 const { props, state } = this;
+
+                console.log('rendering skeleton', props.children);
 
                 let rightPanelHide = props.rightPanelHide
                 ? "dn-s"
                 : "";
 
-                let popout = !!props.popout 
-                ? props.popout 
+                let popout = !!props.popout
+                ? props.popout
                 : false;
 
                 let popoutWindow = (popout)
@@ -48968,17 +48970,17 @@
                 : "ba-m ba-l ba-xl b--gray2 br1";
 
                 return (
-                  react.createElement('div', { className: "h-100 w-100 " + popoutWindow, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 25}}
-                    , react.createElement('div', { className: `cf w-100 h-100 flex ` + popoutBorder, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 26}}
+                  react.createElement('div', { className: "h-100 w-100 " + popoutWindow, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 27}}
+                    , react.createElement('div', { className: `cf w-100 h-100 flex ` + popoutBorder, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 28}}
                       , react.createElement(Sidebar, {
                         popout: popout,
                         sidebarShown: props.sidebarShown,
                         active: props.active,
-                        notebooks: props.notebooks, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 27}}
+                        notebooks: props.notebooks, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 29}}
                         )
                       , react.createElement('div', { className: "h-100 w-100 " + rightPanelHide, style: {
                         flexGrow: 1,
-                      }, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 33}}
+                      }, __self: this, __source: {fileName: _jsxFileName$4, lineNumber: 35}}
                         , props.children
                       )
                     )
@@ -48987,7 +48989,7 @@
               }
             }
 
-            const _jsxFileName$5 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/new.js";
+            const _jsxFileName$5 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/new.js";
             //TODO textarea fields for title/description
             //TODO add component for ship / group search using props.groups
             // (integrate props.contacts as well once contact-view is bound)
@@ -49001,7 +49003,7 @@
               }
             }
 
-            const _jsxFileName$6 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/join.js";
+            const _jsxFileName$6 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/join.js";
             //TODO textarea + join button to make an api call
             class JoinScreen extends react_1 {
               render() {
@@ -49013,7 +49015,7 @@
               }
             }
 
-            const _jsxFileName$7 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/notebook.js";
+            const _jsxFileName$7 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/notebook.js";
             //TODO subcomponents for posts, subscribers, settings
             //
             //TODO props.view switch for which component to render
@@ -49030,14 +49032,14 @@
             class Notebook extends react_1 {
               render() {
                 return (
-                  react.createElement('div', {__self: this, __source: {fileName: _jsxFileName$7, lineNumber: 23}}
+                  react.createElement('div', {__self: this, __source: {fileName: _jsxFileName$7, lineNumber: 23}}, "notebook divs"
 
                   )
                 )
               }
             }
 
-            const _jsxFileName$8 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/comments.js";
+            const _jsxFileName$8 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/comments.js";
             //TODO map comments into comment-items;
             class Comments extends react_1 {
               render() {
@@ -49049,23 +49051,77 @@
               }
             }
 
-            const _jsxFileName$9 = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/lib/note.js";
+            const _jsxFileName$9 = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/lib/note.js";
             //TODO ask for note if we don't have it
             //TODO initialise note if no state
 
             //TODO if comments are disabled on the notebook, don't render comments
             class Note extends react_1 {
+              constructor(props) {
+                super(props);
+
+                this.state = {};
+                this.state.note = null;
+
+                this.loadNote().then(note => {
+                  this.state.note = note;
+                });
+              }
+
+              async loadNote() {
+                const { notebooks, ship, notebook, note } = this.props;
+                //TODO check for existence etc
+                return notebooks[ship][notebook][note];
+              }
+
               render() {
+                const { note } = this.state;
+
+                console.log('rendering note');
+
+
                 return (
-                  react.createElement('div', {__self: this, __source: {fileName: _jsxFileName$9, lineNumber: 11}}
-                    , react.createElement(Comments, {__self: this, __source: {fileName: _jsxFileName$9, lineNumber: 12}})
+                  react.createElement('div', { className: "mw7 center" , __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 33}}
+                    , react.createElement('div', {
+                       className: `pl3 pt2 bb b--gray4 b--gray2-d bg-black-d flex relative overflow-x-scroll
+           overflow-x-auto-l overflow-x-auto-xl flex-shrink-0`,
+                       style: { height: 48 }, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 34}}
+                       , react.createElement(SidebarSwitcher, {
+                         sidebarShown: this.props.sidebarShown,
+                         popout: this.props.popout, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 38}}
+                       )
+                       , react.createElement(Link, { to: `/~chat/` + isinPopout + `room` + state.station,
+                       className: "pt2 white-d" , __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 42}}
+                         , react.createElement('h2', {
+                           className: "mono dib f8 fw4 v-top"    ,
+                           style: { width: "max-content" }, __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 44}}
+                           , state.station.substr(1)
+                         )
+                       )
+                    )
+                    , react.createElement('div', { id: "postHead", __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 51}}, "title author time"
+
+
+                    )
+
+
+                    , react.createElement('div', { id: "postBody", __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 57}}, "body"
+
+                    )
+
+                    , react.createElement('div', { id: "postNav", __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 61}}
+                      , react.createElement('div', { id: "prev", __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 62}}, "<-")
+                      , react.createElement('div', { id: "next", __self: this, __source: {fileName: _jsxFileName$9, lineNumber: 63}}, "->")
+                    )
+
+                    , react.createElement(Comments, {__self: this, __source: {fileName: _jsxFileName$9, lineNumber: 66}})
                   )
                 )
               }
             }
 
-            const _jsxFileName$a = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/js/components/root.js";
-
+            const _jsxFileName$a = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/js/components/root.js";
+            //TODO add new note route
             class Root extends react_1 {
               constructor(props) {
                 super(props);
@@ -49076,9 +49132,10 @@
 
               render() {
                 const { props, state } = this;
+                console.log('st not', state.notebooks);
 
                 return (
-                  react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$a, lineNumber: 23}}
+                  react.createElement(BrowserRouter, {__self: this, __source: {fileName: _jsxFileName$a, lineNumber: 24}}
                     , react.createElement(Route, { exact: true, path: "/~publish",
                       render:  (props) => {
                         return (
@@ -49087,18 +49144,18 @@
                           active: "sidebar",
                           rightPanelHide: true,
                           sidebarShown: true,
-                          notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 27}}
+                          notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 28}}
                             , react.createElement('div', { className: `h-100 w-100 overflow-x-hidden flex flex-column
-                 bg-white bg-gray0-d dn db-ns`, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 33}}
-                              , react.createElement('div', { className: "pl3 pr3 pt2 dt pb3 w-100 h-100"      , __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 35}}
-                                , react.createElement('p', { className: "f9 pt3 gray2 w-100 h-100 dtc v-mid tc"       , __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 36}}, "Select or create a notebook to begin."
+                 bg-white bg-gray0-d dn db-ns`, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 34}}
+                              , react.createElement('div', { className: "pl3 pr3 pt2 dt pb3 w-100 h-100"      , __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 36}}
+                                , react.createElement('p', { className: "f9 pt3 gray2 w-100 h-100 dtc v-mid tc"       , __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 37}}, "Select or create a notebook to begin."
 
                                 )
                               )
                             )
                           )
                         )
-                      }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 24}}
+                      }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 25}}
                     )
                   , react.createElement(Route, { exact: true, path: "/~publish/new",
                     render:  (props) => {
@@ -49108,12 +49165,12 @@
                         active: "rightPanel",
                         rightPanelHide: false,
                         sidebarShown: true,
-                        notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 48}}
+                        notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 49}}
                           , react.createElement(NewScreen, {
-                          groups: state.groups, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 54}})
+                          groups: state.groups, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 55}})
                         )
                       )
-                    }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 45}})
+                    }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 46}})
                   , react.createElement(Route, { exact: true, path: "/~publish/join",
                           render:  (props) => {
                             return (
@@ -49122,11 +49179,30 @@
                               active: "rightPanel",
                               rightPanelHide: false,
                               sidebarShown: true,
-                              notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 62}}
-                                , react.createElement(JoinScreen, {__self: this, __source: {fileName: _jsxFileName$a, lineNumber: 68}})
+                              notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 63}}
+                                , react.createElement(JoinScreen, {__self: this, __source: {fileName: _jsxFileName$a, lineNumber: 69}})
                               )
                             )
-                          }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 59}})
+                          }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 60}})
+                  , react.createElement(Route, { exact: true, path: "/~publish/(popout)?/:ship/:notebook/:note",
+                    render:  (props) => {
+                      console.log('ppp', props);
+
+                      return (
+                        react.createElement(Skeleton, {
+                        popout: false,
+                        active: "rightPanel",
+                        rightPanelHide: false,
+                        sidebarShown: true,
+                        notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 78}}
+                          , react.createElement(Note, {
+                          notebooks: state.notebooks,
+                          ship: props.match.params.ship,
+                          notebook: props.match.params.notebook,
+                          note: props.match.params.note, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 84}})
+                        )
+                      )
+                    }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 73}})
                   , react.createElement(Route, { exact: true, path: "/~publish/(popout)?/:ship/:notebook/:view?",
                     render:  (props) => {
                       let view = (props.match.params.view)
@@ -49139,28 +49215,13 @@
                         active: "rightPanel",
                         rightPanelHide: false,
                         sidebarShown: true,
-                        notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 79}}
+                        notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 99}}
                           , react.createElement(Notebook, {
                           notebooks: state.notebooks,
-                          view: view, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 85}})
+                          view: view, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 105}})
                         )
                       )
-                    }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 72}})
-                  , react.createElement(Route, { exact: true, path: "/~publish/(popout)?/:ship/:notebook/:note",
-                    render:  (props) => {
-                      
-                      return (
-                        react.createElement(Skeleton, {
-                        popout: false,
-                        active: "rightPanel",
-                        rightPanelHide: false,
-                        sidebarShown: true,
-                        notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 95}}
-                          , react.createElement(Note, {
-                          notebooks: state.notebooks, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 101}})
-                        )
-                      )
-                    }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 91}})
+                    }, __self: this, __source: {fileName: _jsxFileName$a, lineNumber: 92}})
                   )
                 )
               }
@@ -49217,6 +49278,7 @@
                 fetch('/~publish/notebooks.json')
                 .then((response) => response.json())
                 .then((json) => {
+                  console.log('fetched notebooks', json);
                   store.handleEvent({
                     type: 'notebooks',
                     data: json,
@@ -49330,7 +49392,7 @@
 
             let subscription = new Subscription();
 
-            const _jsxFileName$b = "/Users/matilde/git/tlon/urbit/pkg/interface/publish/src/index.js";
+            const _jsxFileName$b = "/Users/fang/repos/urbit/urbit/pkg/interface/publish/src/index.js";
             api.setAuthTokens({
               ship: window.ship
             });

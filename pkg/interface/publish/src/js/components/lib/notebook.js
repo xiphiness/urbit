@@ -21,7 +21,7 @@ export class Notebook extends Component {
   render() {
     return (
       <div>
-
+        notebook divs
       </div>
     )
   }

@@ -5,12 +5,14 @@ export class Skeleton extends Component {
   render() {
     const { props, state } = this;
 
+    console.log('rendering skeleton', props.children);
+
     let rightPanelHide = props.rightPanelHide
     ? "dn-s"
     : "";
 
-    let popout = !!props.popout 
-    ? props.popout 
+    let popout = !!props.popout
+    ? props.popout
     : false;
 
     let popoutWindow = (popout)

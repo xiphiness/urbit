@@ -54,6 +54,7 @@ class UrbitApi {
     fetch('/~publish/notebooks.json')
     .then((response) => response.json())
     .then((json) => {
+      console.log('fetched notebooks', json);
       store.handleEvent({
         type: 'notebooks',
         data: json,
