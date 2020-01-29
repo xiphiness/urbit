@@ -5482,6 +5482,102 @@
   ::
   ::+|  utilities
   ::
+  ::  +sanity-check-builds: verify that specified builds have sane state
+  ::
+  ++  sanity-check-builds
+    |=  $:  $=  what-builds
+            $%  [%full ~]
+                [%duct =^duct]
+                [%some builds=(set build)]
+            ==
+          ::
+            description=tank
+        ==
+    ^-  ~
+    =;  errs=(list tang)
+      ?~  errs  ~
+      ~|  [%ford %failed-sanity-check]
+      (mean description (zing errs))
+    =/  builds=(set build)
+      |^  ?-  -.what-builds
+            %full  all-root-builds
+            %duct  (builds-for-duct duct.what-builds)
+            %some  builds.what-builds
+          ==
+      ::
+      ++  all-root-builds
+        %-  %~  gas  in
+            ::  add root builds from queue.build-cache.state
+            ::
+            %-  ~(gas in *(set build))
+            %+  turn  ~(tap in queue.queue.build-cache.state)
+            |=(build-cache-key root-build)
+        ::  add root builds from ducts.state
+        ::  we need to make the builds from schematic and any available dates
+        ::
+        %-  zing
+        %+  turn  ~(val by ducts.state)
+        builds-from-duct-status
+      ::
+      ++  builds-for-duct
+        |=  =^duct
+        %-  ~(gas in *(set build))
+        =/  status  (~(get by ducts.state) duct)
+        ?~  status  ~
+        (builds-from-duct-status u.status)
+      ::
+      ++  builds-from-duct-status
+        |=  duct-status
+        ^-  (list build)
+        ?-  -.live
+          %once  [in-progress.live root-schematic]~
+        ::
+            %live
+          %+  welp
+            ?~  in-progress.live  ~
+            [u.in-progress.live root-schematic]~
+          ?~  last-sent.live  ~
+          [date.u.last-sent.live root-schematic]~
+        ==
+      --
+    ::  for every root build, sanity-check
+    ::
+    |^  ^-  (list tang)
+        %+  murn
+          ~(tap in builds)
+        check-build
+        ::TODO  check if build has anchor
+    ::
+    ++  check-build
+      |=  =build
+      ^-  (unit tang)
+      =/  res  (have-build build)
+      ?^  res  res
+      (have-subs build)
+    ::.
+    ++  have-build
+      |=  =build
+      ^-  (unit tang)
+      ?:  (~(has by builds.state) build)  ~
+      `[leaf+"missing build {(build-to-tape build)}"]~
+    ::
+    ++  have-subs
+      |=  =build
+      ^-  (unit tang)
+      =/  =build-status  (got-build build)
+      =/  results=(list tang)
+        %+  murn
+          ~(tap in ~(key by subs.build-status))
+        check-build
+      ?~  results  ~
+      %-  some
+      :-  leaf+"under {(build-to-tape build)}:"
+      %+  turn  `tang`(zing results)
+      |=  =tank
+      ^+  tank
+      ?>  ?=(%leaf -.tank)
+      tank(p [' ' p.tank])
+    --
   ::  +add-build: store a fresh, unstarted build in the state
   ::
   ++  add-build
