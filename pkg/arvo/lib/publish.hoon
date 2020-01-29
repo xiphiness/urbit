@@ -63,7 +63,7 @@
   |=  [our=@p books=(map @tas notebook) subs=(map [@p @tas] notebook)]
   ^-  json
   =,  enjs:format
-  =/  subs-notebooks-map=json 
+  =/  subs-notebooks-map=json
     %-  ~(rep by subs)
     |=  [[[host=@p book-name=@tas] book=notebook] out=json]
     ^-  json

@@ -42,14 +42,14 @@
 ++  on-arvo
   |=  [=wire =sign-arvo]
   ?+    wire  (on-arvo:def wire sign-arvo)
-      [%clay ~]
-    ::  on writ, wait
-    ::
-    ?>  ?=(%writ +<.sign-arvo)
-    :_  this
-    :~  (warp bowl)
-        (wait bowl)
-    ==
+    ::   [%clay ~]
+    :: ::  on writ, wait
+    :: ::
+    :: ?>  ?=(%writ +<.sign-arvo)
+    :: :_  this
+    :: :~  (warp bowl)
+    ::     (wait bowl)
+    :: ==
   ::
       [%behn ~]
     ::  on wake, goad
