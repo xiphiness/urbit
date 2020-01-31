@@ -571,6 +571,13 @@
       "]"
     ==
   ::
+      %bake
+    ;:  welp
+      "[bake "
+      (spud (en-beam (rail-to-beam path-to-render.schematic)))
+      "]"
+    ==
+  ::
       %core
     :(welp "[core " (spud (en-beam (rail-to-beam source-path.schematic))) "]")
   ::
@@ -838,7 +845,9 @@
   |*  [tracker=(request-tracker) request=*]
   ^-  (list duct)
   ::
-  ~(tap in waiting:(~(got by tracker) request))
+  ?~  val=(~(get by tracker) request)
+    ~
+  ~(tap in waiting.u.val)
 ::  +put-request: associates a +duct with a request
 ::
 ++  put-request
@@ -1424,7 +1433,7 @@
       |-  ^+  state
       ?~  pops  state
       ::
-      =.  state  (remove-anchor-from-root root-build.i.pops [%cache id.i.pops])
+      =.  state  (remove-anchor-from-root root-build.i.pops [%cache id.i.pops] |)
       ::
       $(pops t.pops)
     ::  resize the :compiler-cache
@@ -1449,12 +1458,14 @@
   ::    prints and no-ops.
   ::
   ++  cancel  ^+  [moves state]
-    ::
+    ::.
     =<  finalize
     ::
     ?~  duct-status=(~(get by ducts.state) duct)
       ~&  [%no-build-for-duct duct]
       ..execute
+    =+  %+  sanity-check-builds  full+~
+        >[%cncl-start]<
     ::  :duct is being canceled, so remove it unconditionally
     ::
     =.  ducts.state  (~(del by ducts.state) duct)
@@ -1465,16 +1476,24 @@
       =/  root-build=build  [in-progress.live root-schematic]:u.duct-status
       ::
       =.  ..execute  (cancel-scrys root-build)
-      =.  state  (remove-anchor-from-root root-build [%duct duct])
+      =+  %+  sanity-check-builds  some+[root-build ~ ~]
+          >[%cncl-1a (build-to-tape root-build)]<
+      =.  state  (remove-anchor-from-root root-build [%duct duct] |)
+      =+  %+  sanity-check-builds  some+[root-build ~ ~]
+          >[%cncl-1b (build-to-tape root-build)]<
       ..execute
     ::  if the duct was live and has an unfinished build, cancel it
     ::
     =?  ..execute  ?=(^ in-progress.live.u.duct-status)
-      ::
+      ::.
       =/  root-build=build  [u.in-progress.live root-schematic]:u.duct-status
       ::
       =.  ..execute  (cancel-scrys root-build)
-      =.  state  (remove-anchor-from-root root-build [%duct duct])
+      =+  %+  sanity-check-builds  some+[root-build ~ ~]
+          >[%cncl-2a (build-to-tape root-build)]<
+      =.  state  (remove-anchor-from-root root-build [%duct duct] |)
+      =+  %+  sanity-check-builds  some+[root-build ~ ~]
+          >[%cncl-2b (build-to-tape root-build)]<
       ..execute
     ::  if there is no completed build for the live duct, we're done
     ::
@@ -1484,7 +1503,17 @@
     ::
     =/  root-build=build  [date.u.last-sent root-schematic.u.duct-status]
     ::
-    =.  state  (remove-anchor-from-root root-build [%duct duct])
+    =+  %+  sanity-check-builds  some+[root-build ~ ~]
+        >[%cncl-3a (build-to-tape root-build)]<
+    ::
+    ~?  !(~(has by builds.state) root-build)
+      [%no-such-build (build-to-tape root-build)]
+    ~|  [%has duct (~(has by builds.state) root-build) (build-to-tape root-build)]
+    =.  state  (remove-anchor-from-root root-build [%duct duct] (lien duct |=(=wire ?=(^ (find /publish wire)))))
+    =+  %+  sanity-check-builds  full+~
+        >[%cncl-3b (build-to-tape root-build)]<
+    ::NOTE  xdx root-build isn't guaranteed to be in state anymore at this point
+    ::      right?
     ::
     ?~  subscription.u.last-sent
       ..execute
@@ -1533,7 +1562,7 @@
     ::
     =?    state
         ?=(^ oldest)
-      (remove-anchor-from-root root-build.u.oldest [%cache id.u.oldest])
+      (remove-anchor-from-root root-build.u.oldest [%cache id.u.oldest] |)
     ::  recursively replace :clients in :build and descendants
     ::
     |-  ^+  state
@@ -1560,25 +1589,31 @@
         =-  (~(put by -) [%cache new-id] old-clients-on-duct)
         clients.build-status
       ==
+    ::  do it for all of i.subs' subs
     ::
     =.  state  ^$(build i.subs)
+    ::  proceed with next sub of client
     ::
     $(subs t.subs)
   ::  +remove-anchor-from-root: remove :anchor from :build's tree
   ::
   ++  remove-anchor-from-root
     ~/  %remove-anchor-from-root
-    |=  [=build =anchor]
+    |=  [=build =anchor dbug=?]
     ^+  state
     ::
     =.  builds.state
       %+  ~(jab by builds.state)  build
       |=  =build-status
       build-status(requesters (~(del in requesters.build-status) anchor))
+    ~?  !(~(has by builds.state) build)
+      [%no-such-build3 (build-to-tape build)]
     ::
     =.  builds.state  (remove-anchor-from-subs build anchor)
     ::
-    (cleanup build)
+    =.  state
+      (cleanup build dbug)
+    state
   ::  +remove-anchor-from-subs: recursively remove :anchor from sub-builds
   ::
   ++  remove-anchor-from-subs
@@ -1731,6 +1766,10 @@
     |=  [new-client=build new-subs=(list build) =build-relation]
     ^+  builds.state
     ::
+    =;  aa
+      :: =+  %+  sanity-check-builds(builds.state aa)  some+[new-client ~ ~]
+      :: >[%xdx-add-subs-2-client (build-to-tape new-client)]<
+      aa
     %+  ~(jab by builds.state)  new-client
     |=  =build-status
     %_    build-status
@@ -1764,10 +1803,9 @@
     |=  builds=(set build)
     ^+  ..execute
     ::
-    =.  ..execute  (execute builds)
+    ~|  duct
     ::
-    =+  %+  sanity-check-builds  duct+duct
-        >[%post-execute (turn ~(tap in builds) build-to-tape)]<
+    =.  ..execute  (execute builds)
     ::
     ?:  ?&  ?=(~ next-builds)
             ?=(~ candidate-builds)
@@ -1829,6 +1867,12 @@
       ^+  ..execute
       ~|  [%duct duct]
       =/  duct-status  (~(got by ducts.state) duct)
+      :: =/  dbug-case
+      ::     ?&  ?=(%plan -.schematic.build)
+      ::         ?=(^ (find /hoon/publish spur.source-rail.scaffold.schematic.build))
+      ::     ==
+      :: ~?  dbug-case
+      ::   [%gather (build-to-tape build)]
       ::  if we already have a result for this build, don't rerun the build
       ::
       =^  current-result  builds.state  (access-build-record build)
@@ -2007,6 +2051,13 @@
     ++  promote-build
       |=  [old-build=build new-date=@da new-subs=(list build)]
       ^+  ..execute
+      =/  dbug-case
+          ?&  ?=(%plan -.schematic.old-build)
+               .=  /hoon/publish/lib
+               spur.source-rail.scaffold.schematic.old-build
+          ==
+      ~?  dbug-case
+        [%promote (build-to-tape old-build) new-date]
       ::  grab the previous result, freshening the cache
       ::
       =^  old-build-record  builds.state  (access-build-record old-build)
@@ -2140,7 +2191,8 @@
       =.  state  (add-anchors-to-build-subs client)
       ::
       |-  ^+  state
-      ?~  sub-builds  state
+      ?~  sub-builds
+        state
       ::
       =.  builds.state
         %+  ~(jab by builds.state)  i.sub-builds
@@ -4790,10 +4842,10 @@
       ::
       =/  =beam          (extract-beam resource `date.build)
       =/  =scry-request  [vane.resource care.resource beam]
-      ~?  ?|  ?=(^ (find /lib s.beam))
-              ?=(^ (find /sur s.beam))
-          ==
-        [%make-scry scry-request]
+      :: ~?  ?|  ?=(^ (find /lib s.beam))
+      ::         ?=(^ (find /sur s.beam))
+      ::     ==
+      ::   [%make-scry scry-request]
       ::  perform scry operation if we don't already know the result
       ::
       ::    Look up :scry-request in :scry-results.per-event to avoid
@@ -5486,6 +5538,42 @@
   ::
   ::+|  utilities
   ::
+  ::  +build-to-wall: print build tree as tang
+  ::
+  ++  build-to-wall
+    |=  =build
+    ^-  (list tape)
+    :-  (build-to-tape build)
+    =/  status=(unit build-status)
+      (~(get by builds.state) build)
+    ?~  status  [" no build-status!"]~
+    %-  zing
+    ^-  (list (list tape))
+    %+  turn
+      ~(tap in ~(key by subs.u.status))
+    |=  =^build
+    %+  turn  (build-to-wall build)
+    |=  =tape
+    [' ' tape]
+  ::
+  :: ++  assert-builds-sanity
+  ::   %+  cork  check-builds-sanity
+  ::   |=  errs=(list tang)
+  ::   ^-  ~
+  ::   ?:  sane  ~
+  ::   ~|  [%ford %failed-sanity-check]
+  ::   (mean description (zing errs))
+  :: ::
+  :: ++  check-builds-sanity
+  ::   %+  cork  sanity-check-builds
+  ::   |=  errs=(list tang)
+  ::   ?=(~ errs)
+  ::  +sanity-check-build: crash & print :description if build state not sane
+  ::
+  ::    %full: check all root builds in state
+  ::    %duct: check builds associated with duct
+  ::    %some: check specified builds
+  ::
   ++  sanity-check-builds
     |=  $:  $=  what-builds
             $%  [%full ~]
@@ -5556,12 +5644,24 @@
       =/  res  (have-build build)
       ?^  res  res
       (have-subs build)
-    ::.
+    ::
     ++  have-build
       |=  =build
       ^-  (unit tang)
       ?:  (~(has by builds.state) build)  ~
       `[leaf+"missing build {(build-to-tape build)}"]~
+    ::
+    ++  have-as-client
+      |=  [sub=build client=build]
+      ^-  (unit tang)
+      =/  =build-status  (~(got by builds.state) sub)
+      =;  have=?
+        ?:  have  ~
+        ::TODO  line length
+        `[leaf+"missing client {(build-to-tape client)} in {(build-to-tape sub)}"]~
+      %+  lien  ~(val by clients.build-status)
+      |=  builds=(set build)
+      (~(has in builds) client)
     ::
     ++  have-subs
       |=  =build
@@ -5570,7 +5670,10 @@
       =/  results=(list tang)
         %+  murn
           ~(tap in ~(key by subs.build-status))
-        check-build
+        |=  sub=^build
+        ?^  res=(check-build sub)
+          res
+        (have-as-client sub build)
       ?~  results  ~
       %-  some
       :-  leaf+"under {(build-to-tape build)}:"
@@ -5612,11 +5715,27 @@
   ::
   ++  remove-builds
     ~/  %remove-builds
-    |=  builds=(list build)
+    |=  [builds=(list build) dbug=?]
+    =/  orig-builds  builds
+    =/  orig-subs=(list build)
+      %-  zing
+      ^-  (list (list build))
+      %+  turn  orig-builds
+      |=  =build
+      ^-  (list ^build)
+      %~  tap  in
+      ^-  (set ^build)
+      %~  key  by
+      ^-  (map ^build build-relation)
+      =<  subs
+      `build-status`(~(gut by builds.state) build *build-status)
     ::
     |^  ^+  state
         ::
         ?~  builds
+          :: =+  ?.  dbug  ~
+          ::     %+  sanity-check-builds  full+~
+          ::     >[%end-rem-builds [(turn orig-builds build-to-tape) (turn orig-subs build-to-tape)]]<
           state
         ::
         ?~  maybe-build-status=(~(get by builds.state) i.builds)
@@ -5645,13 +5764,18 @@
       ::
       :-  removed=&
       ::
-      %_    state
-          builds-by-schematic
-        (~(del by-schematic builds-by-schematic.state) build)
+      =.  state
+        %_    state
+            builds-by-schematic
+          (~(del by-schematic builds-by-schematic.state) build)
+        ::
+            builds
+          (~(del by builds.state) build)
+        ==
       ::
-          builds
-        (~(del by builds.state) build)
-      ==
+      ~?  (~(has by builds.state) build)
+        [%should-have-been-removed (build-to-tape build)]
+      state
     --
   ::  +update-build-status: replace :build's +build-status by running a function
   ::
@@ -5846,7 +5970,7 @@
             (build-to-tape build)
           (build-to-tape old-build)
         ::
-        (remove-anchor-from-root old-build [%duct duct])
+        (remove-anchor-from-root old-build [%duct duct] |)
       ::
       =/  resource-list=(list [=disc resources=(set resource)])
         ~(tap by (collect-live-resources build))
@@ -5867,7 +5991,7 @@
         ::  delete this instead of caching it, since it wasn't right
         ::
         =.  ducts.state  (~(del by ducts.state) duct)
-        =.  state  (remove-anchor-from-root build [%duct duct])
+        =.  state  (remove-anchor-from-root build [%duct duct] |)
         ..execute
       ::
       =/  subscription=(unit subscription)
@@ -5908,7 +6032,6 @@
     ~/  %cleanup-orphaned-provisional-builds
     |=  =build
     ^+  ..execute
-    ::
     =/  =build-status  (got-build build)
     ::
     =/  orphans=(list ^build)
@@ -5943,12 +6066,13 @@
     =/  =anchor  [%duct duct]
     ::
     |-  ^+  ..execute
-    ?~  orphans  ..execute
+    ?~  orphans
+      ..execute
     ::  remove link to :build in :i.orphan's +build-status
     ::
     =^  orphan-status  builds.state
       %+  update-build-status  i.orphans
-      |=  orphan-status=_build-status
+      |=  orphan-status=^^build-status  ::  tiniest style change, but had me confused for a little while. we mean the type build-status, not exactly the example of build-status. this gate isn't ever called without arguments, and ^ is used above too.
       %_  orphan-status
         clients  (~(del ju clients.orphan-status) anchor build)
       ==
@@ -5958,7 +6082,7 @@
     ::  :build was the last client on this duct so remove it
     ::
     =.  builds.state  (remove-anchor-from-subs i.orphans anchor)
-    =.  state  (cleanup i.orphans)
+    =.  state  (cleanup i.orphans |)
     $(orphans t.orphans)
   ::  +access-build-record: access a +build-record, updating :last-accessed
   ::
@@ -5991,7 +6115,7 @@
   ::
   ++  cleanup
     ~/  %cleanup
-    |=  =build
+    |=  [=build dbug=?]
     ^+  state
     ::   does this build even exist?!
     ::
@@ -6006,7 +6130,8 @@
     ?^  requesters.build-status
       state
     ::
-    (remove-builds ~[build])
+    =.  state  (remove-builds ~[build] dbug)  ::  it's in here
+    state
   ::  +collect-live-resources: produces all live resources from sub-scrys
   ::
   ++  collect-live-resources
@@ -6253,6 +6378,9 @@
     =/  =build  [now schematic.task]
     =^  moves  state.ax  (start-build:this-event build live.task)
     ::
+    =+  ::  ?.  (lien duct |=(=wire ?=(^ (find /publish wire))))  ~
+        %+  sanity-check-builds:this-event  full+~
+        >[%post-build-call duct]<
     [moves ford-gate]
   ::
       ::  %keep: keep :count cache entries
@@ -6267,8 +6395,14 @@
       ::
       %kill
     ::
+    :: =+  ?.  (lien duct |=(=wire ?=(^ (find /publish wire))))  ~
+    ::     %+  sanity-check-builds:this-event  full+~
+    ::     >[%pre-kill-call duct]<
     =^  moves  state.ax  cancel:this-event
     ::
+    =+  :: ?.  (lien duct |=(=wire ?=(^ (find /publish wire))))  ~
+        %+  sanity-check-builds:this-event  duct+duct
+        >[%post-kill-call duct]<
     [moves ford-gate]
   ::
       ::  %trim: in response to memory pressure
@@ -6367,46 +6501,56 @@
     ++  take-rebuilds
       ^-  [(list move) ford-state]
       ::
+      ~|  [%ford-take-rebuilds wire=wire duct=duct]
       ?>  ?=([@tas %wris *] sign)
       =*  case-sign  p.sign
       =*  care-paths-sign  q.sign
       =+  [ship desk date]=(raid:wired t.wire ~[%p %tas %da])
       =/  disc  [ship desk]
+      ::  ignore spurious clay updates
+      ::
+      ::    Due to asynchronicity of Clay notifications, we might get a
+      ::    subscription update on an already-canceled duct.  This is
+      ::    normal; no-op.
+      ::
+      ?~  duct-status=(~(get by ducts.state.ax) duct)
+        [~ state.ax]
       ::
       =/  =subscription
-        ~|  [%ford-take-bad-clay-sub wire=wire duct=duct]
-        =/  =duct-status  (~(got by ducts.state.ax) duct)
-        ?>  ?=(%live -.live.duct-status)
-        ?>  ?=(^ last-sent.live.duct-status)
-        ?>  ?=(^ subscription.u.last-sent.live.duct-status)
-        u.subscription.u.last-sent.live.duct-status
+        ?>  ?=(%live -.live.u.duct-status)
+        (need subscription:(need last-sent.live.u.duct-status))
       ::
       =/  ducts=(list ^duct)
-        ~|  [%ford-take-missing-subscription subscription]
+        ::  sanity check; there must be at least one duct per subscription
+        ::
+        =-  ?<(=(~ -) -)
         (get-request-ducts pending-subscriptions.state.ax subscription)
       ::
       =|  moves=(list move)
       |-  ^+  [moves state.ax]
-      ?~  ducts  [moves state.ax]
+      ?~  ducts
+        [moves state.ax]
       ::
       =*  event-args  [[our i.ducts now scry-gate] state.ax]
       =*  rebuild  rebuild:(per-event event-args)
       =^  duct-moves  state.ax
         (rebuild subscription p.case-sign disc care-paths-sign)
       ::
+      :: =+  ?^  t.ducts  ~
+      ::     %+  sanity-check-builds:(per-event event-args)  full+~
+      ::     >[%post-rebuild-take wire ducts]<
       $(ducts t.ducts, moves (weld moves duct-moves))
     ::  +take-unblocks: unblock all builds waiting on this scry request
     ::
     ++  take-unblocks
       ^-  [(list move) ford-state]
       ::
+      ~|  [%ford-take-unblocks wire=wire duct=duct]
       ?>  ?=([@tas %writ *] sign)
       =*  riot-sign  p.sign
       ::  scry-request: the +scry-request we had previously blocked on
       ::
-      =/  =scry-request
-        ~|  [%ford-take-bad-scry-request wire=wire duct=duct]
-        (need (path-to-scry-request t.wire))
+      =/  =scry-request  (need (path-to-scry-request t.wire))
       ::  scry-result: parse a (unit cage) from :sign
       ::
       ::    If the result is `~`, the requested resource was not available.
@@ -6429,6 +6573,9 @@
       ::
       =*  unblock  unblock:(per-event event-args)
       =^  duct-moves  state.ax  (unblock scry-request scry-result)
+      =+  :: ?.  (lien duct |=(=^wire ?=(^ (find /publish wire))))  ~
+          %+  sanity-check-builds:(per-event event-args)  duct+duct
+          >[%post-unblock-take wire duct]<
       ::
       $(ducts t.ducts, moves (weld moves duct-moves))
   --
