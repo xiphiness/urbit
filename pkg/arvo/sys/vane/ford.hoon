@@ -592,7 +592,11 @@
     ==
   ::
       %scry
-    (spud (en-beam (extract-beam resource.schematic ~)))
+    ;:  welp
+      "[scry "
+      (spud (en-beam (extract-beam resource.schematic ~)))
+      "]"
+    ==
   ::
     ::    %slim
     ::  "slim {<subject-type.schematic>} {<formula.schematic>}"
@@ -864,7 +868,9 @@
   ^-  [(unit ^duct) _tracker]
   ::  remove :duct from the existing :record of this :request
   ::
-  =/  record  (~(got by tracker) request)
+  =/  record
+    ~|  [tracker request duct]
+    (~(got by tracker) request)
   =.  waiting.record  (~(del in waiting.record) duct)
   ::  if no more ducts wait on :request, delete it
   ::
@@ -1626,7 +1632,8 @@
     =/  client=^build  build
     ::
     |-  ^+  builds.state
-    ?~  subs  builds.state
+    ?~  subs
+      (~(put by builds.state) build build-status)
     ::
     =/  sub-status=^build-status
       ~|  [%client-build (build-to-tape client)]
@@ -1634,6 +1641,17 @@
     ::
     =.  clients.sub-status
       (~(del ju clients.sub-status) anchor client)
+    ::  if this was the last anchor keeping us as client,
+    ::  remove this sub from our build-state
+    ::
+    :: =?  subs.build-status
+    ::     ?&  !verified:(~(got by subs.build-status) i.subs)
+    ::       ::
+    ::         %+  levy  ~(tap by clients.sub-status)
+    ::         |=  [a=_anchor c=(set _client)]
+    ::         !(~(has in c) client)
+    ::     ==
+    ::   (~(del by subs.build-status) i.subs)
     ::
     =.  builds.state  (~(put by builds.state) i.subs sub-status)
     ::
@@ -5634,16 +5652,24 @@
     ::
     |^  ^-  (list tang)
         %+  murn
-          ~(tap in builds)
-        check-build
-        ::TODO  check if build has anchor
+          ~(tap in root-builds)
+        |=  =build
+        ^-  (unit tang)
+        ?.  (~(has by builds.state) build)
+          `[leaf+"missing top-level build {(build-to-tape build)}"]~
+        ?.  ?=(%full -.what-builds)  (check-build build)
+        =/  =build-status  (got-build build)
+        ?~  requesters.build-status
+          `[leaf+"root build without requesters {(build-to-tape build)}"]~
+        (check-build build)
     ::
     ++  check-build
       |=  =build
       ^-  (unit tang)
       =/  res  (have-build build)
       ?^  res  res
-      (have-subs build)
+      (check-subs build)
+      ::TODO  clients need to have jug entry for all those anchors pointing to parent
     ::
     ++  have-build
       |=  =build
@@ -5651,19 +5677,7 @@
       ?:  (~(has by builds.state) build)  ~
       `[leaf+"missing build {(build-to-tape build)}"]~
     ::
-    ++  have-as-client
-      |=  [sub=build client=build]
-      ^-  (unit tang)
-      =/  =build-status  (~(got by builds.state) sub)
-      =;  have=?
-        ?:  have  ~
-        ::TODO  line length
-        `[leaf+"missing client {(build-to-tape client)} in {(build-to-tape sub)}"]~
-      %+  lien  ~(val by clients.build-status)
-      |=  builds=(set build)
-      (~(has in builds) client)
-    ::
-    ++  have-subs
+    ++  check-subs
       |=  =build
       ^-  (unit tang)
       =/  =build-status  (got-build build)
@@ -5682,6 +5696,20 @@
       ^+  tank
       ?>  ?=(%leaf -.tank)
       tank(p [' ' p.tank])
+    ::
+    ++  have-as-client
+      |=  [sub=build client=build]
+      ^-  (unit tang)
+      =/  =build-status  (~(got by builds.state) sub)
+      =;  have=?
+        ?:  have  ~
+        %-  some
+        :_  ~
+        :-  %leaf
+        "missing client {(build-to-tape client)} in {(build-to-tape sub)}"
+      %+  lien  ~(val by clients.build-status)
+      |=  builds=(set build)
+      (~(has in builds) client)
     --
   ::
   ::  +got-build : lookup :build in state, asserting presence
