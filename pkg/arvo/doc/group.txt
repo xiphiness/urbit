@@ -1,0 +1,101 @@
+# Group-store
+
+## Resources
+
++$  groups  (map path group)
++$  group   (set ship)
+
+Groups are sets of ships, stored at paths.
+
+Paths starting with /~/[app-name] are intended for internal use by that app, and
+should not be exposed to the user as groups.
+
+## Actions
+
++$  group-action
+  $%  [%add members=group pax=path]                ::  add member to group
+      [%remove members=group pax=path]             ::  remove member from group
+      [%bundle pax=path]                           ::  create group at path
+      [%unbundle pax=path]                         ::  delete group at path
+  ==
+
+A group (at a path) cannot be added to until it has been explicitly created with a
+%bundle action.
+
+## Subscriptions
+
++$  group-update
+  $%  [%keys keys=(set path)]                      ::  /keys initial result
+      [%path members=group pax=path]               ::  /group initial result
+      group-action
+  ==
+
+### /all
+
+*initial*: (map path group)
+*updates*: group-action
+
+All groups, and all subsequent updates to them.
+
+### /updates
+
+*initial*: none
+*updates*: group-action
+
+Updates for all groups, without initial data.
+
+### /keys
+
+*initial*: group-update (%keys)
+*updates*: group-action (%bundle, %unbundle)
+
+All existing group paths, and updates whenever a new one is created, or an
+existing one is deleted.
+
+### /group/[group-path]
+
+*initial*: group-update (%path)
+*updates*: group-action
+
+An existing group, and all subsequent updates to it.
+
+## Peeks
+
+### /x/[group-path]
+
+(unit group), containing a group if the group at group-path exists.
+
+
+# Group-hook
+
+Exposes group data to foreign ships.
+Syncs group data from foreign ships.
+
+Subscribes to foreign group-hooks, then pokes the local group-store with
+resulting updates.
+
+## Actions
+
++$  group-hook-action
+  $%  [%add =ship =path]
+      [%remove =path]
+  ==
+
+In %add, if ship is our, make the group (at path) publicly accessible to foreign
+ships.
+If ship is foreign, delete any local group at that path and mirror the foreign
+group at the path instead.
+
+%remove stops exposing & syncing of the specified path.
+
+## Subscriptions
+
+Mirrors the group-store behavior for /group/[group-path] subscriptions, but only
+for groups that have been %add-ed (see actions above).
+
+
+# Pool-group-hook
+
+Maintains an /invite-peers group that contains all ships invited by the same
+ship as us. Works completely hands-off, no application interface.
+

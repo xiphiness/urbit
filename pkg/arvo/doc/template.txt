@@ -1,0 +1,53 @@
+# Some-store
+
+## Resources
+
+Describe the data stored in this store. Don't be afraid to show the types.
+Don't forget to describe any expected usage patterns for the resource paths, if any.
+
+## Actions
+
+Describe the actions available for manipulating the data in the store.
+
+## Subscriptions
+
+Give an overview of the subscription result data, then describe the different
+paths that can be subscribed to:
+
+### /some/[foo]/(bar)
+
+*initial*: some-type-name
+*updates*: some-update-type
+
+Some resource, specified by foo, with an optional bar.
+
+## Peeks
+
+List the peek paths and their result types:
+
+### /x/some/[foo]/(bar)
+
+(unit some), containing some resource if it exists in /foo/bar.
+
+
+# Some-hook
+
+Describe what the hook does, and how it relates to other local and foreign apps.
+
+## Actions
+
+Maybe the hook has actions. Proceed as with the store.
+
+## Subscriptions
+
+Maybe the hook offers subscriptions. If they follow the store's semantics, just
+say so.
+
+## Web
+
+Maybe the hook serves some files, or exposes a json endpoint. Describe it here:
+
+### /~some/foo.html
+
+Serves some html page preloaded with a foo.
+
