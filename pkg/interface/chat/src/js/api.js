@@ -116,7 +116,7 @@ class UrbitApi {
       }
     };
 
-    this.action("chat-hook", "json", data);
+    this.action("chat-hook", "chat-action", data);
     this.addPendingMessage(data.message);
   }
 

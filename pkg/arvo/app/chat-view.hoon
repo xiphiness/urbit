@@ -239,9 +239,9 @@
 ++  diff-chat-update
   |=  upd=chat-update
   ^-  (list card)
-  =/  updates-json  (update-to-json upd)
+  ::=/  updates-json  (update-to-json upd)
   =/  configs-json  (configs-to-json configs-scry)
-  :~  [%give %fact ~[/primary] %json !>(updates-json)]
+  :~  [%give %fact ~[/primary] %chat-update !>(upd)]
       [%give %fact ~[/configs] %json !>(configs-json)]
   ==
 ::

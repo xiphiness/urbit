@@ -23,10 +23,11 @@ export class ChatInput extends Component {
     this.messageSubmit = this.messageSubmit.bind(this);
     this.messageChange = this.messageChange.bind(this);
 
+    //
     // perf testing:
-    /*let closure = () => {
+    let closure = () => {
       let x = 0;
-      for (var i = 0; i < 30; i++) {
+      for (var i = 0; i < 6; i++) {
         x++;
         props.api.chat.message(
           props.station,
@@ -39,7 +40,7 @@ export class ChatInput extends Component {
       }
       setTimeout(closure, 1000);
     };
-    this.closure = closure.bind(this);*/
+    this.closure = closure.bind(this);
 
     moment.updateLocale('en', {
         relativeTime : {
@@ -145,7 +146,7 @@ export class ChatInput extends Component {
       Date.now(),
       letter
     );
-    // perf: setTimeout(this.closure, 2000);
+    setTimeout(this.closure, 2000);
 
     this.setState({
       message: '',

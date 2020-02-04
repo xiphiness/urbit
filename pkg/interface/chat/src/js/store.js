@@ -25,6 +25,8 @@ class Store {
     this.inviteUpdateReducer = new InviteUpdateReducer();
     this.localReducer = new LocalReducer();
     this.setState = () => {};
+
+    this.perf = performance.now();
   }
 
   setStateHandler(setState) {
@@ -34,7 +36,10 @@ class Store {
   handleEvent(data) {
     let json = data.data;
 
-    console.log(json);
+    var n = performance.now();
+    console.log(n - this.perf);
+    this.perf = n;
+
     this.initialReducer.reduce(json, this.state);
     this.groupUpdateReducer.reduce(json, this.state);
     this.permissionUpdateReducer.reduce(json, this.state);
