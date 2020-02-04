@@ -5629,7 +5629,7 @@
     ::
     |^  ^-  (list tang)
         %+  murn
-          ~(tap in root-builds)
+          ~(tap in builds)
         |=  =build
         ^-  (unit tang)
         ?.  (~(has by builds.state) build)
