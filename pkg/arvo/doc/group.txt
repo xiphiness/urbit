@@ -7,6 +7,8 @@
 
 Groups are sets of ships, stored at paths.
 
+Paths are always prefixed with /~ship, where ~ship is the owner of the group.
+
 Paths starting with /~/[app-name] are intended for internal use by that app, and
 should not be exposed to the user as groups.
 
