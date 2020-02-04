@@ -545,72 +545,49 @@
   ~+
   ::
   =/  enclose  |=(tape "[{+<}]")
+  =/  print-rail  |=(rail (spud (flop spur)))
   =/  date=@da  date.build
-  =/  =schematic  schematic.build
+  =/  sem=schematic  schematic.build
+  |-  ^-  tape
   ::
   %-  enclose
   %+  welp  (trip (scot %da date))
   %+  welp  " "
   ::
-  ?+      -.schematic
-        :(welp "[" (trip -.schematic) " {<`@uvI`(mug schematic)>}]")
-      ::
-      %$
-    "literal"
-  ::
-      ^
-    %-  enclose
-    ;:(welp $(build [date head.schematic]) " " $(build [date tail.schematic]))
-  ::
-      %alts
-    ;:  welp
-      %+  roll  choices.schematic
-      |=  [choice=^schematic txt=_"[alts"]
-      :(welp txt " " ^$(schematic.build choice))
-    ::
-      "]"
-    ==
-  ::
-      %bake
-    ;:  welp
-      "[bake "
-      (spud (en-beam (rail-to-beam path-to-render.schematic)))
-      "]"
-    ==
-  ::
-      %core
-    :(welp "[core " (spud (en-beam (rail-to-beam source-path.schematic))) "]")
-  ::
-      %hood
-    :(welp "[hood " (spud (en-beam (rail-to-beam source-path.schematic))) "]")
-  ::
-      %plan
-    ;:  welp
-      "[plan "
-      (spud (en-beam (rail-to-beam path-to-render.schematic)))
-      "]"
-    ==
-  ::
-      %scry
-    ;:  welp
-      "[scry "
-      (spud (en-beam (extract-beam resource.schematic ~)))
-      "]"
-    ==
-  ::
-    ::    %slim
-    ::  "slim {<subject-type.schematic>} {<formula.schematic>}"
-  ::
-      %vale
-    ;:  welp
-      "[vale ["
-      (trip (scot %p ship.disc.schematic))
-      " "
-      (trip desk.disc.schematic)
-      "] "
-      (trip mark.schematic)
-      "]"
-    ==
+  ?+  -.sem  "{(trip -.sem)} {(scow %uw (mug sem))}"
+    %$     "%$ {(trip p.literal.sem)} {(scow %uw (mug sem))}"
+    ^      (enclose :(welp $(sem head.sem) " " $(sem tail.sem)))
+    %alts  %+  roll  choices.sem
+           |=  [choice=schematic txt=_"alts"]
+           :(welp txt " " ^$(sem choice))
+    %bake  "bake {(trip renderer.sem)} {(print-rail path-to-render.sem)}"
+    %bunt  "bunt {(trip mark.sem)}"
+    %call  "call {$(sem gate.sem)} {$(sem sample.sem)}"
+    %cast  "cast {(trip mark.sem)} {$(sem input.sem)}"
+    %core  "core {(print-rail source-path.sem)}"
+    %diff  "diff {$(sem start.sem)} {$(sem end.sem)}"
+    %dude  "dude {$(sem attempt.sem)}"
+    %hood  "hood {(print-rail source-path.sem)}"
+    %join  "join {(trip mark.sem)} {$(sem first.sem)} {$(sem second.sem)}"
+    %list  %+  roll  schematics.sem
+           |=  [tem=schematic txt=_"list"]
+           :(welp txt " " ^$(sem tem))
+    %mash  ;:  welp  "mash "  (trip mark.sem)  " "
+             (trip mark.first.sem)     " "  $(sem schematic.first.sem)   " "
+             (trip mark.second.sem)    " "  $(sem schematic.second.sem)  " "
+           ==
+    %mute  "mute {$(sem subject.sem)} {(scow %uw (mug mutations.sem))}"
+    %pact  "pact {$(sem start.sem)} {$(sem diff.sem)}"
+    %path  "path /{(trip prefix.sem)}/{(trip raw-path.sem)}"
+    %plan  "hood {(print-rail path-to-render.sem)}"
+    %pin   "pin {(scow %da date.sem)} {$(sem schematic.sem)}"
+    %reef  "<<reef>>"
+    %ride  "ride {(scow %uw (mug formula.sem))} {$(sem subject.sem)}"
+    %same  "same {$(sem schematic.sem)}"
+    %scry  "scry {(print-rail rail.resource.sem)}"
+    %vale  "vale {(trip mark.sem)} {(scow %uw (mug input.sem))}"
+    %volt  "volt {(trip mark.sem)} {(scow %uw (mug input.sem))}"
+    %walk  "walk {(trip source.sem)} {(trip target.sem)}"
   ==
 ::  +rail-to-beam: convert :rail to a +beam, filling in the case with `[%ud 0]`
 ::
