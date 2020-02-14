@@ -534,6 +534,15 @@
   ::
   ?>  ?=(^ s)
   ~[[i.torn s] [(join i.torn i.s) t.s]]
+::
+++  clients-to-tape
+  |=  =build-status
+  ^-  tape
+  =-  (zing (turn - build-to-tape))
+  %~  tap  in
+  %+  roll  ~(val by clients.build-status)
+  |=  [clients=(set build) acc=(set build)]
+  (~(uni in clients) acc)
 ::  +build-to-tape: convert :build to a printable format
 ::
 ::    Builds often contain the standard library and large types, so
@@ -1492,8 +1501,15 @@
     ~?  !(~(has by builds.state) root-build)
       [%no-such-build (build-to-tape root-build)]
     ~|  [%has duct (~(has by builds.state) root-build) (build-to-tape root-build)]
+    =/  old-state  state
     =.  state  (remove-anchor-from-root root-build [%duct duct] (lien duct |=(=wire ?=(^ (find /publish wire)))))
-    =+  %+  sanity-check-builds  full+~
+    =+  =-  ?-  -<
+              %|  =.  state  old-state
+                  (sanity-check-builds full+~ >[%old-full]<)
+              %&  ~
+            ==
+        %-  mule  |.
+        %+  sanity-check-builds  full+~
         >[%cncl-3b (build-to-tape root-build)]<
     ::NOTE  xdx root-build isn't guaranteed to be in state anymore at this point
     ::      right?
@@ -1557,8 +1573,12 @@
     ?~  subs  state
     ::
     =.  builds.state
+      ~?  (dbug i.subs)  %d2c-under^duct^(build-to-tape build)
+      =-  ~?  (dbug i.subs)  %d2c-end^(clients-to-tape (got-build i.subs))
+          -
       %+  ~(jab by builds.state)  i.subs
       |=  =build-status
+      ~?  (dbug i.subs)  %d2c-start^(clients-to-tape (got-build i.subs))
       %_    build-status
           clients
         ::  if we've already encountered :i.subs, don't overwrite
@@ -1616,6 +1636,10 @@
       ~|  [%client-build (build-to-tape client)]
       (got-build i.subs)
     ::
+    ~?  (dbug i.subs)  %ras-under^duct^(build-to-tape client)
+    ~?  (dbug i.subs)  %ras-push^(clients-to-tape (got-build i.subs))
+    =-  ~?  (dbug i.subs)  %ras-pop^(clients-to-tape (got-build i.subs))
+      -
     =.  clients.sub-status
       (~(del ju clients.sub-status) anchor client)
     ::  if this was the last anchor keeping us as client,
@@ -1654,6 +1678,7 @@
       ^+  state
       ?~  subs  state
       ::
+      ~?  (dbug i.subs)  %add-to-client^(build-to-tape build)
       =.  state  (add-build i.subs)
       ::
       $(subs t.subs)
@@ -1680,6 +1705,10 @@
     ::
     |-  ^+  builds.state
     ?~  subs  builds.state
+    ~?  (dbug i.subs)  %add-anch-client^(build-to-tape client)
+    ~?  (dbug i.subs)  %add-anch-push^(clients-to-tape (got-build i.subs))
+    =-  ~?  (dbug i.subs)  %add-anch-pop^(clients-to-tape (got-build i.subs))
+        -
     ::
     =/  sub-status=^build-status  (got-build i.subs)
     ::
@@ -1744,6 +1773,12 @@
       ::
       =/  new-sub  old-sub(date new-date)
       =.  state  (add-build new-sub)
+      ~?  (dbug new-sub)  %add-client^(build-to-tape new-client)
+      ~?  (dbug new-sub)
+        %add-client-start^(clients-to-tape (got-build new-sub))
+      =-  ~?  (dbug new-sub)
+            %add-client-end^(clients-to-tape (got-build new-sub))
+          -
       ::
       =.  builds.state
         %+  ~(jab by builds.state)  new-sub
@@ -5688,6 +5723,12 @@
       |=  builds=(set build)
       (~(has in builds) client)
     --
+  ::  +dbug: should we print debug traces for :build?
+  ::
+  ++  dbug
+    |=  =build
+    ^-  ?
+    =(0wHDGAU (mug schematic.build))
   ::
   ::  +got-build : lookup :build in state, asserting presence
   ::
@@ -6075,14 +6116,21 @@
       ..execute
     ::  remove link to :build in :i.orphan's +build-status
     ::
+    ~?  (dbug i.orphans)  %orph-client^(build-to-tape build)
+    ~?  (dbug i.orphans)
+      %orph-start^(clients-to-tape (got-build i.orphans))
+    =-  ~?  (dbug i.orphans)
+          %orph-end^(clients-to-tape (got-build i.orphans))
+        -
     =^  orphan-status  builds.state
       %+  update-build-status  i.orphans
-      |=  orphan-status=^^build-status  ::  tiniest style change, but had me confused for a little while. we mean the type build-status, not exactly the example of build-status. this gate isn't ever called without arguments, and ^ is used above too.
+      |=  orphan-status=^^build-status
       %_  orphan-status
         clients  (~(del ju clients.orphan-status) anchor build)
       ==
     ::
     ?:  (~(has by clients.orphan-status) anchor)
+      ~?  (dbug i.orphans)  %orph-has-anchor^duct
       $(orphans t.orphans)
     ::  :build was the last client on this duct so remove it
     ::
