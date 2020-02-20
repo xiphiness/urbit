@@ -37,6 +37,9 @@
 +$  glyph  char
 ++  glyphs  "!@#$%^&()-=_+[]\{};'\\:\",.<>?"
 ::
+::NOTE  only the "simple" modes from rw-security
++$  nu-security  ?(%channel %village)
+::
 +$  command
   $%  [%target (set target)]                        ::  set messaging target
       [%say letter]                                 ::  send message
@@ -44,10 +47,10 @@
     ::
       ::
       ::  create chat
-      [%create rw-security path (unit glyph) (unit ?)]
+      [%create nu-security path (unit glyph) (unit ?)]
       [%delete path]                                ::  delete chat
-      [%invite ?(%r %w %rw) path (set ship)]        ::  allow
-      [%banish ?(%r %w %rw) path (set ship)]        ::  disallow
+      [%invite path (set ship)]                     ::  allow
+      [%banish path (set ship)]                     ::  disallow
     ::
       [%join target (unit glyph) (unit ?)]          ::  join target
       [%leave target]                               ::  nuke target
@@ -237,7 +240,7 @@
   |=  [=wire upd=chat-update]
   ^-  (quip card state)
   ?+  -.upd  [~ all-state]
-    %create    (notice-create +.upd)
+    %create    (notice-create (path-to-target path.upd))
     %delete    [[(show-delete:sh-out (path-to-target path.upd)) ~] all-state]
     %message   (read-envelope (path-to-target path.upd) envelope.upd)
     %messages  (read-envelopes (path-to-target path.upd) envelopes.upd)
@@ -367,8 +370,8 @@
       ::
       [%create leaf+";create [type] /chat-name (glyph)"]
       [%delete leaf+";delete /chat-name"]
-      [%invite leaf+";invite [rw | r | w] /chat-name ~ships"]
-      [%banish leaf+";banish [rw | r | w] /chat-name ~ships"]
+      [%invite leaf+";invite /chat-name ~ships"]
+      [%banish leaf+";banish /chat-name ~ships"]
     ::
       [%bind leaf+";bind [glyph] ~ship/chat-name"]
       [%unbind leaf+";unbind [glyph]"]
@@ -484,8 +487,8 @@
           ==
         ==
         ;~((glue ace) (tag %delete) path)
-        ;~((glue ace) (tag %invite) rw path ships)
-        ;~((glue ace) (tag %banish) rw path ships)
+        ;~((glue ace) (tag %invite) path ships)
+        ;~((glue ace) (tag %banish) path ships)
       ::
         ;~  (glue ace)
           (tag %join)
@@ -583,11 +586,7 @@
     ::  +security: security mode
     ::
     ++  security
-      (perk %channel %village %journal %mailbox ~)
-    ::  +rw: read, write, or read-write
-    ::
-    ++  rw
-      (perk %rw %r %w ~)
+      (perk %channel %village ~)
     ::
     ::  +glyph: shorthand character
     ::
@@ -752,7 +751,7 @@
     ::  +create: new local mailbox
     ::
     ++  create
-      |=  [security=rw-security =path gyf=(unit char) allow-history=(unit ?)]
+      |=  [security=nu-security =path gyf=(unit char) allow-history=(unit ?)]
       ^-  (quip card state)
       ::TODO  check if already exists
       =/  =target  [our-self path]
@@ -763,21 +762,15 @@
       =-  [[- moz] all-state]
       %^  act  %do-create  %chat-view
       :-  %chat-view-action
-      !>
+      !>  ^-  chat-view-action
       :*  %create
           path
           security
           ::  ensure we can read from/write to our own chats
           ::
-          ::  read
           ?-  security
-            ?(%channel %journal)  ~
-            ?(%village %mailbox)  [our-self ~ ~]
-          ==
-          ::  write
-          ?-  security
-            ?(%channel %mailbox)  ~
-            ?(%village %journal)  [our-self ~ ~]
+            %channel  ~
+            %village  [our-self ~ ~]
           ==
           (fall allow-history %.y)
       ==
@@ -789,30 +782,20 @@
       =-  [[- ~] all-state]
       %^  act  %do-delete  %chat-view
       :-  %chat-view-action
-      !>
+      !>  ^-  chat-view-action
       [%delete (target-to-path our-self path)]
     ::  +change-permission: modify permissions on a local chat
     ::
     ++  change-permission
-      |=  [allow=? rw=?(%r %w %rw) =path ships=(set ship)]
+      |=  [allow=? =path ships=(set ship)]
       ^-  (quip card state)
       :_  all-state
-      =;  cards=(list card)
-        ?.  allow  cards
-        %+  weld  cards
+      =;  card=(unit card)
+        %+  weld  (drop card)
+        ?.  allow  ~
         %+  turn  ~(tap in ships)
         (cury invite-card path)
-      %+  murn
-        ^-  (list term)
-        ?-  rw
-          %r   [%read ~]
-          %w   [%write ~]
-          %rw  [%read %write ~]
-        ==
-      |=  =term
-      ^-  (unit card)
       =.  path
-        =-  (snoc `^path`- term)
         [%chat (target-to-path our-self path)]
       ::  whitelist: empty if no matching permission, else true if whitelist
       ::
@@ -834,7 +817,7 @@
       %-  some
       %^  act  %do-permission  %group-store
       :-  %group-action
-      !>
+      !>  ^-  group-action
       ?:  =(u.whitelist allow)
         [%add ships path]
       [%remove ships path]
@@ -853,7 +836,7 @@
       ::      gives ugly %chat-hook-reap
       %^  act  %do-join  %chat-view
       :-  %chat-view-action
-      !>
+      !>  ^-  chat-view-action
       [%join ship.target path.target (fall ask-history %.y)]
     ::  +leave: unsync & destroy mailbox
     ::
@@ -866,7 +849,7 @@
         "can't ;leave local chats, maybe use ;delete instead"
       %^  act  %do-leave  %chat-hook
       :-  %chat-hook-action
-      !>
+      !>  ^-  chat-hook-action
       [%remove (target-to-path target)]
     ::  +say: send messages
     ::
@@ -881,7 +864,7 @@
       |=  =target
       %^  act  %out-message  %chat-hook
       :-  %chat-action
-      !>
+      !>  ^-  chat-action
       :+  %message  (target-to-path target)
       [serial *@ our-self now.bowl letter]
     ::  +eval: run hoon, send code and result as message

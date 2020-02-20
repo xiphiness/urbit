@@ -51,6 +51,8 @@ export class Root extends Component {
     let invites = '/chat' in state.invites ?
       state.invites['/chat'] : {};
 
+    let contacts = !!state.contacts ? state.contacts : {};
+
     const renderChannelSidebar = (props) => (
       <Sidebar
         inbox={state.inbox}
@@ -75,7 +77,7 @@ export class Root extends Component {
                   sidebarShown={state.sidebarShown}
                   sidebar={renderChannelSidebar(props)}
                 >
-                  <div className="h-100 w-100 overflow-x-hidden flex flex-column bg-gray0">
+                  <div className="h-100 w-100 overflow-x-hidden flex flex-column bg-white bg-gray0-d">
                     <div className="pl3 pr3 pt2 dt pb3 w-100 h-100">
                       <p className="f8 pt3 gray2 w-100 h-100 dtc v-mid tc">
                         Select, create, or join a chat to begin.
@@ -101,6 +103,7 @@ export class Root extends Component {
                     setSpinner={this.setSpinner}
                     api={api}
                     inbox={state.inbox || {}}
+                    groups={state.groups || {}}
                     {...props}
                   />
                 </Skeleton>
@@ -109,28 +112,41 @@ export class Root extends Component {
           />
           <Route
             exact
-            path="/~chat/join/:ship?/:station?"
+            path="/~chat/join/(~)?/:ship?/:station?"
             render={props => {
               let station =
-                props.match.params.ship
-                + "/" +
-                props.match.params.station;
+                `/${props.match.params.ship}/${props.match.params.station}`;
+              let sig = props.match.url.includes("/~/");
+              if (sig) {
+                station = '/~' + station;
+              }
+
+
               return (
                 <Skeleton
                   sidebarHideOnMobile={true}
                   sidebar={renderChannelSidebar(props)}
                   sidebarShown={state.sidebarShown}
                 >
-                  <JoinScreen api={api} inbox={state.inbox} autoJoin={station} {...props} />
+                  <JoinScreen
+                    api={api}
+                    inbox={state.inbox}
+                    autoJoin={station}
+                    {...props} />
                 </Skeleton>
               );
             }}
           />
           <Route
             exact
-            path="/~chat/(popout)?/room/:ship/:station+"
+            path="/~chat/(popout)?/room/(~)?/:ship/:station+"
             render={props => {
-              let station = `/${props.match.params.ship}/${props.match.params.station}`;
+              let station =
+                `/${props.match.params.ship}/${props.match.params.station}`;
+              let sig = props.match.url.includes("/~/");
+              if (sig) {
+                station = '/~' + station;
+              } 
               let mailbox = state.inbox[station] || {
                 config: {
                   read: 0,
@@ -139,8 +155,10 @@ export class Root extends Component {
                 envelopes: []
               };
 
-              let write = state.groups[`/chat${station}/write`] || new Set([]);
+              let roomContacts = (station in contacts)
+                ? contacts[station] : {};
 
+              let group = state.groups[station] || new Set([]);
               let popout = props.match.url.includes("/popout/");
 
               return (
@@ -151,17 +169,20 @@ export class Root extends Component {
                   sidebar={renderChannelSidebar(props)}
                 >
                   <ChatScreen
+                    station={station}
                     api={api}
                     subscription={subscription}
                     read={mailbox.config.read}
                     length={mailbox.config.length}
                     envelopes={mailbox.envelopes}
                     inbox={state.inbox}
-                    group={write}
+                    group={group}
+                    contacts={roomContacts}
                     permissions={state.permissions}
                     pendingMessages={state.pendingMessages}
                     popout={popout}
                     sidebarShown={state.sidebarShown}
+                    chatInitialized={state.chatInitialized}
                     {...props}
                   />
                 </Skeleton>
@@ -170,18 +191,22 @@ export class Root extends Component {
           />
           <Route
             exact
-            path="/~chat/(popout)?/members/:ship/:station+"
+            path="/~chat/(popout)?/members/(~)?/:ship/:station+"
             render={props => {
               let station = `/${props.match.params.ship}/${props.match.params.station}`;
-              let read = state.permissions[`/chat${station}/read`] || {
-                kind: "",
-                who: new Set([])
-              };
-              let write = state.permissions[`/chat${station}/write`] || {
+              let sig = props.match.url.includes("/~/");
+              if (sig) {
+                station = '/~' + station;
+              } 
+
+              let permission = state.permissions[station] || {
                 kind: "",
                 who: new Set([])
               };
               let popout = props.match.url.includes("/popout/");
+
+              let roomContacts = (station in contacts)
+                ? contacts[station] : {};
 
               return (
                 <Skeleton
@@ -193,8 +218,9 @@ export class Root extends Component {
                   <MemberScreen
                     {...props}
                     api={api}
-                    read={read}
-                    write={write}
+                    station={station}
+                    permission={permission}
+                    contacts={roomContacts}
                     permissions={state.permissions}
                     popout={popout}
                     sidebarShown={state.sidebarShown}
@@ -205,10 +231,15 @@ export class Root extends Component {
           />
           <Route
             exact
-            path="/~chat/(popout)?/settings/:ship/:station+"
+            path="/~chat/(popout)?/settings/(~)?/:ship/:station+"
             render={props => {
-              let station = `/${props.match.params.ship}/${props.match.params.station}`;
-              let write = state.groups[`/chat${station}/write`] || new Set([]);
+              let station =
+                `/${props.match.params.ship}/${props.match.params.station}`;
+              let sig = props.match.url.includes("/~/");
+              if (sig) {
+                station = '/~' + station;
+              } 
+              let group = state.groups[station] || new Set([]);
 
               let popout = props.match.url.includes("/popout/");
 
@@ -222,9 +253,11 @@ export class Root extends Component {
                 >
                   <SettingsScreen
                     {...props}
+                    station={station}
                     setSpinner={this.setSpinner}
                     api={api}
-                    group={write}
+                    station={station}
+                    group={group}
                     inbox={state.inbox}
                     popout={popout}
                     sidebarShown={state.sidebarShown}

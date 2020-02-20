@@ -14,7 +14,7 @@ class UrbitApi {
       add: this.groupAdd.bind(this),
       remove: this.groupRemove.bind(this)
     };
-    
+
     this.chat = {
       message: this.chatMessage.bind(this),
       read: this.chatRead.bind(this)
@@ -25,11 +25,10 @@ class UrbitApi {
       delete: this.chatViewDelete.bind(this),
       join: this.chatViewJoin.bind(this),
     };
-    
+
     this.invite = {
       accept: this.inviteAccept.bind(this),
-      decline: this.inviteDecline.bind(this),
-      invite: this.inviteInvite.bind(this)
+      decline: this.inviteDecline.bind(this)
     };
   }
 
@@ -117,6 +116,7 @@ class UrbitApi {
     };
 
     this.action("chat-hook", "json", data);
+    data.message.envelope.author = data.message.envelope.author.substr(1);
     this.addPendingMessage(data.message);
   }
 
@@ -128,10 +128,10 @@ class UrbitApi {
     this.action("chat-view", "json", data);
   }
 
-  chatViewCreate(path, security, read, write, allowHistory) {
+  chatViewCreate(path, security, members, allowHistory) {
     this.chatViewAction({
       create: {
-        path, security, read, write,
+        path, security, members,
         'allow-history': allowHistory
       }
     });
@@ -142,7 +142,7 @@ class UrbitApi {
   }
 
   chatViewJoin(ship, path, askHistory) {
-    this.chatViewAction({ 
+    this.chatViewAction({
       join: {
         ship, path,
         'ask-history': askHistory
@@ -153,24 +153,6 @@ class UrbitApi {
   inviteAction(data) {
     this.action("invite-store", "json", data);
   }
-  
-  inviteInvite(path, ship) {
-    this.action("invite-hook", "json", 
-      {
-        invite: {
-          path: '/chat',
-          invite: {
-            path,
-            ship: `~${window.ship}`,
-            recipient: ship,
-            app: 'chat-hook',
-            text: `~${window.ship}${path}`,
-          },
-          uid: uuid()
-        }
-      }
-    );
-  }
 
   inviteAccept(uid) {
     this.inviteAction({
@@ -180,7 +162,7 @@ class UrbitApi {
       }
     });
   }
-  
+
   inviteDecline(uid) {
     this.inviteAction({
       decline: {

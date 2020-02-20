@@ -17,7 +17,6 @@ export class ChatScreen extends Component {
    super(props);
 
    this.state = {
-     station: `/${props.match.params.ship}/${props.match.params.station}`,
      numPages: 1,
      scrollLocked: false
    };
@@ -45,6 +44,11 @@ export class ChatScreen extends Component {
  componentDidUpdate(prevProps, prevState) {
    const { props, state } = this;
 
+   const station =
+     props.match.params[1] === undefined ?
+     `/${props.match.params.ship}/${props.match.params.station}` :
+     `/${props.match.params[1]}/${props.match.params.ship}/${props.match.params.station}`;
+
    if (
      prevProps.match.params.station !== props.match.params.station ||
      prevProps.match.params.ship !== props.match.params.ship
@@ -55,7 +59,7 @@ export class ChatScreen extends Component {
 
      this.setState(
        {
-         station: `/${props.match.params.ship}/${props.match.params.station}`,
+         station: station,
          scrollLocked: false
        },
        () => {
@@ -67,7 +71,7 @@ export class ChatScreen extends Component {
          this.updateReadNumber();
        }
      );
-   } else if (Object.keys(props.inbox).length === 0) {
+   } else if (props.chatInitialized && !(station in props.inbox)) {
      props.history.push("/~chat");
    } else if (
      props.envelopes.length - prevProps.envelopes.length >=
@@ -80,7 +84,7 @@ export class ChatScreen extends Component {
  updateReadNumber() {
    const { props, state } = this;
    if (props.read < props.length) {
-     props.api.chat.read(state.station);
+     props.api.chat.read(props.station);
    }
  }
 
@@ -105,7 +109,7 @@ export class ChatScreen extends Component {
 
        this.hasAskedForMessages = true;
 
-       props.subscription.fetchMessages(start, end - 1, state.station);
+       props.subscription.fetchMessages(start, end - 1, props.station);
      }
    }
  }
@@ -181,8 +185,8 @@ export class ChatScreen extends Component {
      );
    }
 
-   let pendingMessages = props.pendingMessages.has(state.station)
-     ? props.pendingMessages.get(state.station)
+   let pendingMessages = props.pendingMessages.has(props.station)
+     ? props.pendingMessages.get(props.station)
      : [];
 
    pendingMessages.map(function(value) {
@@ -207,6 +211,7 @@ export class ChatScreen extends Component {
        <Message
          key={msg.uid}
          msg={msg}
+         contacts={props.contacts}
          renderSigil={renderSigil}
          paddingTop={paddingTop}
          paddingBot={paddingBot}
@@ -219,10 +224,12 @@ export class ChatScreen extends Component {
 
    let isinPopout = this.props.popout ? "popout/" : "";
 
+   let ownerContact = (window.ship in props.contacts)
+     ? props.contacts[window.ship] : false;
 
    return (
      <div
-       key={state.station}
+       key={props.station}
        className="h-100 w-100 overflow-hidden flex flex-column">
        <div
          className="w-100 dn-m dn-l dn-xl inter pt4 pb6 pl3 f8"
@@ -230,31 +237,31 @@ export class ChatScreen extends Component {
          <Link to="/~chat/">{"⟵ All Chats"}</Link>
        </div>
        <div
-         className={`pl3 pt2 bb b--gray4 b--gray0-d bg-black-d flex relative overflow-x-scroll
+         className={`pl3 pt2 bb b--gray4 b--gray1-d bg-gray0-d flex relative overflow-x-scroll
          overflow-x-auto-l overflow-x-auto-xl flex-shrink-0`}
          style={{ height: 48 }}>
          <SidebarSwitcher
            sidebarShown={this.props.sidebarShown}
            popout={this.props.popout}
          />
-         <Link to={`/~chat/` + isinPopout + `room` + state.station}
+         <Link to={`/~chat/` + isinPopout + `room` + props.station}
          className="pt2 white-d">
            <h2
              className="mono dib f8 fw4 v-top"
              style={{ width: "max-content" }}>
-             {state.station.substr(1)}
+             {props.station.substr(1)}
            </h2>
          </Link>
          <ChatTabBar
            {...props}
-           station={state.station}
+           station={props.station}
            numPeers={group.length}
            isOwner={deSig(props.match.params.ship) === window.ship}
            popout={this.props.popout}
          />
        </div>
        <div
-         className="overflow-y-scroll bg-black-d pt3 pb2 flex flex-column-reverse"
+         className="overflow-y-scroll bg-gray0-d pt3 pb2 flex flex-column-reverse"
          style={{ height: "100%", resize: "vertical" }}
          onScroll={this.onScroll}>
          <div
@@ -266,8 +273,9 @@ export class ChatScreen extends Component {
        <ChatInput
          api={props.api}
          numMsgs={lastMsgNum}
-         station={state.station}
+         station={props.station}
          owner={deSig(props.match.params.ship)}
+         ownerContact={ownerContact}
          permissions={props.permissions}
          placeholder="Message..."
        />
