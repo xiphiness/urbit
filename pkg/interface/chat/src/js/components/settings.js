@@ -14,7 +14,6 @@ export class SettingsScreen extends Component {
     super(props);
 
     this.state = {
-      station: `/${props.match.params.ship}/${props.match.params.station}`,
       isLoading: false
     };
 
@@ -23,11 +22,11 @@ export class SettingsScreen extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { props, state } = this;
-    if (!!state.isLoading && !(state.station in props.inbox)) {
+    if (!!state.isLoading && !(props.station in props.inbox)) {
       this.setState({
         isLoading: false
       }, () => {
-        props.setSpinner(false);
+        props.api.setSpinner(false);
         props.history.push('/~chat');
       });
     }
@@ -36,8 +35,8 @@ export class SettingsScreen extends Component {
   deleteChat() {
     const { props, state } = this;
 
-    props.api.chatView.delete(state.station);
-    props.setSpinner(true);
+    props.api.chatView.delete(props.station);
+    props.api.setSpinner(true);
 
     this.setState({
       isLoading: true
@@ -90,23 +89,23 @@ export class SettingsScreen extends Component {
             <Link to="/~chat/">{"⟵ All Chats"}</Link>
           </div>
           <div
-            className="pl3 pt2 bb b--gray4 b--gray0-d bg-black-d flex relative overflow-x-scroll overflow-x-auto-l overflow-x-auto-xl flex-shrink-0"
+            className="pl3 pt2 bb b--gray4 b--gray2-d bg-gray0-d flex relative overflow-x-scroll overflow-x-auto-l overflow-x-auto-xl flex-shrink-0"
             style={{ height: 48 }}>
             <SidebarSwitcher
               sidebarShown={this.props.sidebarShown}
               popout={this.props.popout}
             />
-            <Link to={`/~chat/` + isinPopout + `room` + state.station}
+            <Link to={`/~chat/` + isinPopout + `room` + props.station}
             className="pt2 white-d">
               <h2
                 className="mono dib f8 fw4 v-top"
                 style={{ width: "max-content" }}>
-                {state.station.substr(1)}
+                {props.station.substr(1)}
               </h2>
             </Link>
             <ChatTabBar
               {...props}
-              station={state.station}
+              station={props.station}
               numPeers={writeGroup.length}
             />
           </div>
@@ -131,17 +130,17 @@ export class SettingsScreen extends Component {
             sidebarShown={this.props.sidebarShown}
             popout={this.props.popout}
           />
-          <Link to={`/~chat/` + isinPopout + `room` + state.station}
+          <Link to={`/~chat/` + isinPopout + `room` + props.station}
           className="pt2">
             <h2
               className="mono dib f8 fw4 v-top"
               style={{ width: "max-content" }}>
-              {state.station.substr(1)}
+              {props.station.substr(1)}
             </h2>
           </Link>
           <ChatTabBar
             {...props}
-            station={state.station}
+            station={props.station}
             numPeers={writeGroup.length}
             isOwner={deSig(props.match.params.ship) === window.ship}
             popout={this.props.popout}
