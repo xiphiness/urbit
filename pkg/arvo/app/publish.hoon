@@ -350,6 +350,16 @@
     |=  [wir=wire sin=sign-arvo]
     ^-  (quip card _this)
     ?+  wir
+      ?:  ?=(%g -.sin)
+        =/  gif=gift:able:gall  +.sin
+        ?:  ?=(%done -.gif)
+          ?~  error.gif
+            ~&  [%gift -.gif]
+            (on-arvo:def wir sin)
+          ~&  [%gift -.gif tag.u.error.gif]
+          %-  (slog tang.u.error.gif)
+          (on-arvo:def wir sin)
+        (on-arvo:def wir sin)
       (on-arvo:def wir sin)
     ::
         [%read %paths ~]
