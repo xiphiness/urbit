@@ -21,7 +21,7 @@ export class Input extends Component {
                        "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
                        "F9", "F10", "F11", "F12", "Backspace", "Unidentified",
                        "Delete", "Insert", "Home", "PageUp", "PageDown", "End",
-                       "Dead"
+                       "Dead", "CapsLock"
                       ];
 
   // submit on enter
@@ -79,7 +79,16 @@ render() {
         cursor={this.props.cursor}
         onClick={e => store.setState({ cursor: e.target.selectionEnd })}
         onKeyDown={this.keyPress}
-        onPaste={e => {e.preventDefault()}}
+        onPaste={e => {
+          let clipboardData = e.clipboardData || window.clipboardData;
+          let paste = Array.from(clipboardData.getData('Text'));
+          paste.reduce(async (previous, next) => {
+            await previous;
+            this.setState({cursor: this.props.cursor + 1});
+            return store.doEdit({ ins: { cha: next, at: this.props.cursor } });
+          }, Promise.resolve());
+          e.preventDefault();
+          }}
         ref={this.inputRef}
         defaultValue={this.props.input}
       />
