@@ -57,6 +57,14 @@
   =/  pax  (weld sys path)
   =/  txt  .^(@ %cx (weld pax /hoon))
   [[%vane path] [%veer term pax txt]]
+::  +rmem-ovum: gall state load
+::
+++  rmem-ovum
+  |=  bas=path
+  ^-  unix-event
+  =/  =lore:gall
+    .^(lore:gall %ga bas)
+  [[%$ %gall ~] [%rmem lore]]
 ::  +file-ovum: userspace filesystem load
 ::
 ::     bas: full path to / directory

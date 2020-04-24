@@ -1825,6 +1825,7 @@
       $%  [$conf p=dock q=dock]                         ::  configure app
           [$deal p=sock q=term r=deal]                  ::  full transmission
           [%goad force=? agent=(unit dude)]             ::  rebuild agent(s)
+          [%rmem =lore]                                 ::  import state
           [%sear =ship]                                 ::  clear pending queues
           $>(%init vane-task)                           ::  set owner
           $>(%trim vane-task)                           ::  trim state
@@ -2389,6 +2390,9 @@
       ::  %behn: wakeup
       ::
       $>(%wake task:able:behn)
+      ::  %gall: import old state
+      ::
+      $>(%rmem task:able:gall)
   ==
 --  ::
 ::                                                      ::  ::
