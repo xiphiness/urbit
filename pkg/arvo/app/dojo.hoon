@@ -1349,7 +1349,8 @@
   !>(state)
 ::
 ++  on-load
-  |=  =old-state=vase
+  |=  [=old-state=vase breach=?]
+  ?:  breach  `..on-init
   =/  old-state  !<(house old-state-vase)
   `..on-init(state old-state)
 ::

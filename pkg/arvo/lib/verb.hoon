@@ -20,10 +20,10 @@
   on-save:ag
 ::
 ++  on-load
-  |=  old-state=vase
+  |=  [old-state=vase breach=?]
   ^-  (quip card:agent:gall agent:gall)
   %-  (print bowl "{<dap.bowl>}: on-load")
-  =^  cards  agent  (on-load:ag old-state)
+  =^  cards  agent  (on-load:ag old-state breach)
   [cards this]
 ::
 ++  on-poke

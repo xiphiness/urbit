@@ -80,7 +80,7 @@
   ::
   ++  on-save  !>(state)
   ++  on-load
-    |=  =vase
+    |=  [=vase breach=?]
     ^-  (quip card _this)
     =/  old=versioned-state
       !<(versioned-state vase)
