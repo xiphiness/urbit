@@ -252,7 +252,7 @@
       agents     t.agents
       ..mo-core  (mo-reboot force i.agents our)
     ==
-  ++  mo-rmem
+  ++  mo-book
     |=  =lore
     ^+  mo-core
     =.  lore.state
@@ -1692,8 +1692,8 @@
       %goad
     mo-abet:(mo-goad:initialised force.task agent.task)
   ::
-      %rmem
-    mo-abet:(mo-rmem:initialised lore.task)
+      %book
+    mo-abet:(mo-book:initialised lore.task)
   ::
       %sear
     mo-abet:(mo-filter-queue:initialised ship.task)
