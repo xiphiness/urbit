@@ -23,6 +23,11 @@ function getNumPending(props) {
 const ACTIVITY_TIMEOUT = 60000; // a minute
 const DEFAULT_BACKLOG_SIZE = 300;
 
+// percentage of scroll container to lock/unlock
+const LOCK_THRESHOLD_RATIO = 0.5;
+// max threshold for large screens
+const LOCK_THRESHOLD_MAX = 200;
+
 function scrollIsAtTop(container) {
   if ((navigator.userAgent.includes("Safari") &&
       navigator.userAgent.includes("Chrome")) ||
@@ -37,14 +42,48 @@ function scrollIsAtTop(container) {
   }
 }
 
+function scrollShouldLock(container) {
+  const threshold =
+        Math.min(container.clientHeight * LOCK_THRESHOLD_RATIO, LOCK_THRESHOLD_MAX);
+
+  if ((navigator.userAgent.includes('Safari') &&
+      navigator.userAgent.includes('Chrome')) ||
+      navigator.userAgent.includes('Firefox')
+  ) {
+    return container.scrollHeight - container.scrollTop - container.clientHeight <=
+        threshold;
+  } else if (navigator.userAgent.includes('Safari')) {
+    return -1 * container.scrollTop <=
+      threshold;
+  } else {
+    return false;
+  }
+}
+
+function scrollShouldUnlock(container) {
+  const threshold =
+        Math.min(container.clientHeight * LOCK_THRESHOLD_RATIO, LOCK_THRESHOLD_MAX);
+  if ((navigator.userAgent.includes('Safari') &&
+      navigator.userAgent.includes('Chrome')) ||
+      navigator.userAgent.includes('Firefox')
+  ) {
+    return container.scrollHeight - container.scrollTop - container.clientHeight >=
+        threshold;
+  } else if (navigator.userAgent.includes('Safari')) {
+    return -1 * container.scrollTop >= threshold;
+  } else {
+    return false;
+  }
+}
+
 function scrollIsAtBottom(container) {
-  if ((navigator.userAgent.includes("Safari") &&
-      navigator.userAgent.includes("Chrome")) ||
-      navigator.userAgent.includes("Firefox")
+  if ((navigator.userAgent.includes('Safari') &&
+      navigator.userAgent.includes('Chrome')) ||
+      navigator.userAgent.includes('Firefox')
   ) {
     return container.scrollHeight - Math.round(container.scrollTop) <=
         container.clientHeight + 10;
-  } else if (navigator.userAgent.includes("Safari")) {
+  } else if (navigator.userAgent.includes('Safari')) {
     return container.scrollTop === 0;
   } else {
     return false;
@@ -265,6 +304,10 @@ export class ChatScreen extends Component {
         numPages: 1,
         scrollLocked: false
       });
+    } else if (scrollShouldLock(e.target)) {
+      this.setState({ scrollLocked: true });
+    } else if (scrollShouldUnlock(e.target)) {
+      this.setState({ scrollLocked: false });
     }
   }
 
