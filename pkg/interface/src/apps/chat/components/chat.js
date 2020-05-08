@@ -29,12 +29,12 @@ const LOCK_THRESHOLD_RATIO = 0.5;
 const LOCK_THRESHOLD_MAX = 200;
 
 function scrollIsAtTop(container) {
-  if ((navigator.userAgent.includes("Safari") &&
-      navigator.userAgent.includes("Chrome")) ||
-      navigator.userAgent.includes("Firefox")
+  if ((navigator.userAgent.includes('Safari') &&
+      navigator.userAgent.includes('Chrome')) ||
+      navigator.userAgent.includes('Firefox')
   ) {
     return container.scrollTop === 0;
-  } else if (navigator.userAgent.includes("Safari")) {
+  } else if (navigator.userAgent.includes('Safari')) {
     return container.scrollHeight + Math.round(container.scrollTop) <=
         container.clientHeight + 10;
   } else {
@@ -100,7 +100,7 @@ export class ChatScreen extends Component {
       read: props.read,
       active: true,
       // only for FF
-      lastScrollHeight: null,
+      lastScrollHeight: null
     };
 
     this.hasAskedForMessages = false;
@@ -130,18 +130,18 @@ export class ChatScreen extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener("mousemove", this.handleActivity, false);
-    document.addEventListener("mousedown", this.handleActivity, false);
-    document.addEventListener("keypress", this.handleActivity, false);
-    document.addEventListener("touchmove", this.handleActivity, false);
+    document.addEventListener('mousemove', this.handleActivity, false);
+    document.addEventListener('mousedown', this.handleActivity, false);
+    document.addEventListener('keypress', this.handleActivity, false);
+    document.addEventListener('touchmove', this.handleActivity, false);
     this.activityTimeout = setTimeout(this.setInactive, ACTIVITY_TIMEOUT);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("mousemove", this.handleActivity, false);
-    document.removeEventListener("mousedown", this.handleActivity, false);
-    document.removeEventListener("keypress", this.handleActivity, false);
-    document.removeEventListener("touchmove", this.handleActivity, false);
+    document.removeEventListener('mousemove', this.handleActivity, false);
+    document.removeEventListener('mousedown', this.handleActivity, false);
+    document.removeEventListener('keypress', this.handleActivity, false);
+    document.removeEventListener('touchmove', this.handleActivity, false);
     if(this.activityTimeout) {
       clearTimeout(this.activityTimeout);
     }
@@ -182,11 +182,11 @@ export class ChatScreen extends Component {
       this.askForMessages(DEFAULT_BACKLOG_SIZE);
     }
 
-    if(props.read === props.length){
+    if(props.read === props.length) {
       this.scrolledToMarker = true;
       this.setState(
         {
-          scrollLocked: false,
+          scrollLocked: false
         },
         () => {
           this.scrollToBottom();
@@ -232,7 +232,7 @@ export class ChatScreen extends Component {
        state.numPages !== prevState.numPages)
     ) {
       this.scrollToBottom();
-      if(navigator.userAgent.includes("Firefox")) {
+      if(navigator.userAgent.includes('Firefox')) {
         this.recalculateScrollTop();
       }
 
@@ -516,7 +516,6 @@ ref={(e) => {
 
     const unreadMsg = unread > 0 && messages[unread - 1];
 
-
     const showUnreadNotice = props.length !== props.read && props.read === state.read;
 
     return (
@@ -560,7 +559,7 @@ ref={(e) => {
             api={props.api}
           />
         </div>
-        { !!unreadMsg && showUnreadNotice && (
+        { Boolean(unreadMsg) && showUnreadNotice && (
           <UnreadNotice
             unread={unread}
             unreadMsg={unreadMsg}
