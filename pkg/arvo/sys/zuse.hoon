@@ -40,11 +40,10 @@
 ::
 ::  miscellaneous systems types
 ::+|
-++  ares  (unit {p/term q/(list tank)})                 ::  possible error
 ::  +capped-queue: a +qeu with a maximum number of entries
 ::
 ++  capped-queue
-  |*  item-type=mold
+  |$  [item-type]
   $:  queue=(qeu item-type)
       size=@ud
       max-size=_64
@@ -55,35 +54,36 @@
 ::     :key-type to :val-type. Detailed docs for this type can be found there.
 ::
 ++  clock
-  |*  $:  ::  key-type: mold of keys
-          ::
-          key-type=mold
-          ::  val-type: mold of values
-          ::
-          val-type=mold
-      ==
-    $:  lookup=(map key-type [val=val-type fresh=@ud])
-        queue=(qeu key-type)
-        size=@ud
-        max-size=_2.048
-        depth=_1
-    ==
+  |$  ::  key-type: mold of keys
+      ::  val-type: mold of values
+      ::
+      [key-type val-type]
+  $:  lookup=(map key-type [val=val-type fresh=@ud])
+      queue=(qeu key-type)
+      size=@ud
+      max-size=_2.048
+      depth=_1
+  ==
 ::
-++  coop  (unit ares)                                   ::  possible error
-++  life  @ud                                           ::  ship key revision
-++  rift  @ud                                           ::  ship continuity
-++  mime  {p/mite q/octs}                               ::  mimetyped data
-::
-::
-::    TODO: Rename to +mime once the current +mime and +mite are gone. The
-::
-++  octs  {p/@ud q/@t}                                  ::  octet-stream
-++  sock  {p/ship q/ship}                               ::  outgoing [our his]
++$  deco  ?(~ $bl $br $un)                              ::  text decoration
++$  json                                                ::  normal json value
+  $@  ~                                                 ::  null
+  $%  [%a p=(list json)]                                ::  array
+      [%b p=?]                                          ::  boolean
+      [%o p=(map @t json)]                              ::  object
+      [%n p=@ta]                                        ::  number
+      [%s p=@t]                                         ::  string
+  ==                                                    ::
++$  life  @ud                                           ::  ship key revision
++$  rift  @ud                                           ::  ship continuity
++$  mime  (pair mite octs)                              ::  mimetyped data
++$  octs  (pair @ud cord)                               ::  octet-stream
++$  sock  (pair ship ship)                              ::  outgoing [our his]
 ::+|
 ::
-++  roof  (room vase)                                   ::  namespace
++$  roof  (room vase)                                   ::  namespace
 ++  room                                                ::  either namespace
-  |*  vase/mold                                         ::  vase or maze
+  |$  [vase]                                            ::  vase or maze
   $-  $:  ref/*                                         ::  reference type
           lyc/(unit (set ship))                         ::  leakset
           car/term                                      ::  perspective
@@ -93,7 +93,14 @@
   %-  unit                                              ::  ~ ~: invalid
   (cask vase)                                           ::  marked cargo
 ::
-++  turf  (list @t)                                     ::  domain, tld first
++$  stub  (list (pair stye (list @c)))                  ::  styled unicode
++$  stye  (pair (set deco) (pair tint tint))            ::  decos/bg/fg
++$  styl  %+  pair  (unit deco)                         ::  cascading style
+          (pair (unit tint) (unit tint))                ::
++$  styx  (list $@(@t (pair styl styx)))                ::  styled text
++$  tint  ?($r $g $b $c $m $y $k $w $~)                 ::  text color
+::
++$  turf  (list @t)                                     ::  domain, tld first
 ::                                                      ::
 ::::                      ++jstd                        ::  json standards structures
   ::                                                    ::::
@@ -598,7 +605,6 @@
         {$ud p/@ud}                                     ::  number
     ==                                                  ::
   ++  cass  {ud/@ud da/@da}                             ::  cases for revision
-  ++  coop  (unit ares)                                 ::  e2e ack
   ++  crew  (set ship)                                  ::  permissions group
   ++  dict  {src/path rul/real}                         ::  effective permission
   ++  dome                                              ::  project state
@@ -768,7 +774,6 @@
         {$sav p/path q/@}                               ::  save to file
         {$url p/@t}                                     ::  activate url
     ==                                                  ::
-  ++  deco  ?(~ $bl $br $un)                            ::  text decoration
   ++  dill-belt                                         ::  new belt
     $%  {$aro p/?($d $l $r $u)}                         ::  arrow key
         {$bac ~}                                        ::  true backspace
