@@ -43,6 +43,7 @@ cp $ARVO/mar/lens/*      ./pier/home/mar/lens/ 2>/dev/null || true
 cp $ARVO/sur/lens.hoon   ./pier/home/sur/      2>/dev/null || true
 cp $ARVO/sur/plum.hoon   ./pier/home/sur/      2>/dev/null || true
 cp $ARVO/sur/sole.hoon   ./pier/home/sur/      2>/dev/null || true
+cp $ARVO/sur/xray.hoon   ./pier/home/sur/      2>/dev/null || true
 
 #  update +solid and its dependencies
 #
