@@ -1956,24 +1956,31 @@
           ::
           cord
 +$  tint  ?($r $g $b $c $m $y $k $w $~)                 ::  text color
-++  tang  (list tank)                                   ::  bottom-first error
-++  tank  $~  [%leaf ~]                                 ::
-          $%  {$leaf p/tape}                            ::  printing formats
-              $:  $palm                                 ::  backstep list
-                  p/{p/tape q/tape r/tape s/tape}       ::
-                  q/(list tank)                         ::
-              ==                                        ::
-              $:  $rose                                 ::  flat list
-                  p/{p/tape q/tape r/tape}              ::  mid open close
-                  q/(list tank)                         ::
-              ==                                        ::
-          ==                                            ::
-++  tape  (list @tD)                                    ::  utf8 string as list
-++  tour  (list @c)                                     ::  utf32 clusters
-++  tarp  {d/@ud h/@ud m/@ud s/@ud f/(list @ux)}        ::  parsed time
-++  term  @tas                                          ::  ascii symbol
-++  wain  (list cord)                                   ::  text lines
-++  wall  (list tape)                                   ::  text lines
++$  tang  (list tank)                                   ::  bottom-first error
+::
+::  $tank: formatted print tree
+::
+::    just a cord, or
+::    %leaf: just a tape
+::    %palm: backstep list
+::           flat-mid, open, flat-open, flat-close
+::    %rose: flat list
+::           flat-mid, open, close
+::
++$  tank
+  $~  leaf+~
+  $@  cord
+  $%  [%leaf p=tape]
+      [%palm p=(qual tape tape tape tape) q=(list tank)]
+      [%rose p=(trel tape tape tape) q=(list tank)]
+  ==
+::
++$  tape  (list @tD)                                    ::  utf8 string as list
++$  tour  (list @c)                                     ::  utf32 clusters
++$  tarp  {d/@ud h/@ud m/@ud s/@ud f/(list @ux)}        ::  parsed time
++$  term  @tas                                          ::  ascii symbol
++$  wain  (list cord)                                   ::  text lines
++$  wall  (list tape)                                   ::  text lines
 ::
 ::::  2p: serialization                                 ::
   ::                                                    ::
@@ -4440,6 +4447,8 @@
   ::
   ++  ram
     ^-  tape
+    ?@  tac
+      (trip tac)
     ?-    -.tac
         %leaf  p.tac
     ::
@@ -4478,6 +4487,8 @@
     ::
     =|  lug=wall
     |^  ^-  wall
+        ?@  tac
+          (rig (trip tac))
         ?-    -.tac
             %leaf  (rig p.tac)
         ::

@@ -42,6 +42,10 @@ let
       cp ./build/urbit-worker $out/bin/$exename-worker
     '';
 
+    shellHook = ''
+      bash ./configure
+    '';
+
     # See https://github.com/NixOS/nixpkgs/issues/18995
     hardeningDisable = if debug then [ "all" ] else [];
 
