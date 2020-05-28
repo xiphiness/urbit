@@ -20,12 +20,12 @@ jetSpec = [r|
 ++  skzero  (S K)
 ++  sksucc  (S (S (K S) K))
 
-++  (pak n)    (J J K (n sksucc skzero))
+++  (pak n)    (E E K (n sksucc skzero))
 ++  (inc n)    (pak <i z (i (n i z))>)
 
-++  0  (J J K skzero)
-++  1  (J J K (sksucc skzero))
-++  2  (J J K (sksucc (sksucc skzero)))
+++  0  (E E K skzero)
+++  1  (E E K (sksucc skzero))
+++  2  (E E K (sksucc (sksucc skzero)))
 
 ++  zee
   |=  f
@@ -35,7 +35,7 @@ jetSpec = [r|
 ++  (fix fun arg)
   %^    zee
       |=  $
-      %-  (J J %fix)
+      %-  (E E %fix)
       <f x (f ($ f) x)>
     fun
   arg
@@ -44,7 +44,7 @@ jetSpec = [r|
   ~/  2  fix
   %-  zee
   |=  $
-  %-  (J J %fix)
+  %-  (E E %fix)
   |=  (f x)
   (f ($ f) x)
 
@@ -92,7 +92,7 @@ jetSpec = [r|
 ++  (lsh x n)  (mul (bex x) n)
 
 ++  divlop
-  %-  (J J J %divlop)
+  %-  (E E E %divlop)
   %-  fix
   |=  ($ divisor count remain)
   %+  (iff (lth remain divisor))
@@ -109,7 +109,7 @@ jetSpec = [r|
 ++  (trace x y)  (y uni)
 
 ++  snag
-  %-  (J J %snag)
+  %-  (E E %snag)
   %-  fix
   |=  ($ idx l)
   %+  (cas l)
@@ -120,7 +120,7 @@ jetSpec = [r|
   <u (ded %snag-fail)>
 
 ++  weld
-  %-  (J J %weld)
+  %-  (E E %weld)
   %-  fix
   |=  ($ a b)
   %+  (cas a)
@@ -128,7 +128,7 @@ jetSpec = [r|
   <u b>
 
 ++  turn
-  %-  (J J %turn)
+  %-  (E E %turn)
   %-  fix
   |=  ($ b fun)
   %+  (cas b)
@@ -136,7 +136,7 @@ jetSpec = [r|
   <u lnil>
 
 ++  gulf
-  %-  (J J %gulf)
+  %-  (E E %gulf)
   %-  fix
   |=  ($ a b)
   %+  (gte b a)
