@@ -120,6 +120,7 @@
       %metadata-hook
       %s3-store
       %file-server
+      %graph-store
   ==
 ::
 ++  deft-fish                                           ::  default connects
@@ -243,7 +244,8 @@
       =<  (se-born %home %link-listen-hook)
       =<  (se-born %home %link-view)
       =<  (se-born %home %file-server)
-      (se-born %home %s3-store)
+      =<  (se-born %home %s3-store)
+      (se-born %home %graph-store)
     .
   ?>  ?=(%4 ver)
   =>  (se-drop:(se-pull our.hid %dojo) | our.hid %dojo)
