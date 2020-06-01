@@ -4,7 +4,8 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 network]
++$  state-0  [%0 network:store]
+++  ordered-graph  ((ordered-map ,time ,node:store) gth)
 --
 ::
 =|  state-0

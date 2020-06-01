@@ -6,8 +6,13 @@
       tag-queries=(map term resources)
   ==
 ::
-+$  graph  (ordered-map time node)
-+$  node   [=post replies=(unit graph)]
++$  internal-graph  (tree [key=time val=node])
++$  graph
+  $~  [%empty ~]
+  $%  [%graph u=internal-graph]
+      [%empty ~]
+  ==
++$  node   [=post replies=graph]
 +$  action
   $%  [%add-graph =resource =graph]
       [%remove-graph =resource]
@@ -27,5 +32,4 @@
       [%initial =network]
       action
   ==
-      
 --
